@@ -15,11 +15,26 @@ if (POLICY CMP0141)
 endif()
 
 # 実行ファイルを WIN32（サブシステム:Windows）として作成
-add_executable (CMakeProject1 WIN32 "CMakeProject1.cpp" "CMakeProject1.h")
+add_executable (CMakeProject1 WIN32  
+  Application.cpp
+  KeyResolver.cpp
+  JsonConfigManager.cpp
+  Logger.cpp
+  WindowManager.cpp
+  DirectInputManager.cpp
+  InputProcessor.cpp
+  WinMain.cpp)
 
 # nlohmann_json を検索。vcpkg を利用している場合は vcpkg の toolchain を指定して CMake を呼んでください
 find_package(nlohmann_json CONFIG QUIET)
 
+# Unicodeを有効にする
+add_compile_definitions(UNICODE _UNICODE)
+
+# 静的リンクを設定
+target_link_options(CMakeProject1 PRIVATE -municode)
+
+target_link_libraries(CMakeProject1 PRIVATE dinput8 dxguid user32 gdi32)
 target_link_libraries(CMakeProject1 PRIVATE nlohmann_json::nlohmann_json)
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
@@ -27,3 +42,4 @@ if (CMAKE_VERSION VERSION_GREATER 3.12)
 endif()
 
 # TODO: テストを追加し、必要な場合は、ターゲットをインストールします。
+
