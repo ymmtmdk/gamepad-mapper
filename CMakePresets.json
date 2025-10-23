@@ -56,6 +56,16 @@
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release"
             }
+        },
+        {
+            "name": "with-vcpkg",
+            "displayName": "Configure using vcpkg toolchain",
+            "inherits": "windows-base",
+            "description": "Configure with vcpkg toolchain. Replace the placeholder path for CMAKE_TOOLCHAIN_FILE with your actual vcpkg path before use.",
+            "cacheVariables": {
+                "CMAKE_TOOLCHAIN_FILE": "C:/Users/tuftu/vcpkg/scripts/buildsystems/vcpkg.cmake",
+                "VCPKG_FEATURE_FLAGS": "manifests"
+            }
         }
     ]
 }

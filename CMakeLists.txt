@@ -19,15 +19,6 @@ add_executable (CMakeProject1 WIN32 "CMakeProject1.cpp" "CMakeProject1.h")
 
 # nlohmann_json を検索。vcpkg を利用している場合は vcpkg の toolchain を指定して CMake を呼んでください
 find_package(nlohmann_json CONFIG QUIET)
-if(NOT nlohmann_json_FOUND)
- include(FetchContent)
- FetchContent_Declare(
- nlohmann_json
- GIT_REPOSITORY https://github.com/nlohmann/json.git
- GIT_TAG v3.11.2
- )
- FetchContent_MakeAvailable(nlohmann_json)
-endif()
 
 target_link_libraries(CMakeProject1 PRIVATE nlohmann_json::nlohmann_json)
 
