@@ -17,15 +17,15 @@ endif()
 # 実行ファイルを WIN32（サブシステム:Windows）として作成
 # 複数ゲームパッド対応版 (標準版)
 add_executable (GamepadMapper WIN32  
-  Application.cpp
-  GamepadDevice.cpp
-  MultipleGamepadManager.cpp
-  KeyResolver.cpp
-  JsonConfigManager.cpp
-  Logger.cpp
-  WindowManager.cpp
-  InputProcessor.cpp
-  WinMain.cpp)
+  src/Application.cpp
+  src/GamepadDevice.cpp
+  src/MultipleGamepadManager.cpp
+  src/KeyResolver.cpp
+  src/JsonConfigManager.cpp
+  src/Logger.cpp
+  src/WindowManager.cpp
+  src/InputProcessor.cpp
+  src/WinMain.cpp)
 
 # nlohmann_json を検索。vcpkg を利用している場合は vcpkg の toolchain を指定して CMake を呼んでください
 find_package(nlohmann_json CONFIG QUIET)

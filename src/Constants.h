@@ -4,7 +4,7 @@
 // Application Configuration
 namespace AppConstants {
     // Window settings
-    constexpr int WINDOW_WIDTH = 400;
+    constexpr int WINDOW_WIDTH = 800;
     constexpr int WINDOW_HEIGHT = 600;
     constexpr DWORD FRAME_SLEEP_MS = 20;
     
