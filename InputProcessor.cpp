@@ -119,7 +119,7 @@ void InputProcessor::ProcessButtons(const DIJOYSTATE2& js)
 {
     // Process all buttons with mappings
     for (size_t i = 0; i < MAX_BUTTONS; ++i) {
-        const auto& vks = m_configManager->getButtonKeys(i);
+        const auto& vks = m_configManager->getButtonKeys(static_cast<int>(i));
         if (vks.empty()) continue;
         
         bool pressed = (js.rgbButtons[i] & 0x80) != 0;
@@ -132,7 +132,7 @@ void InputProcessor::ProcessButtons(const DIJOYSTATE2& js)
 
 void InputProcessor::ProcessButtonInternal(size_t buttonIndex, bool pressed)
 {
-    const auto& vks = m_configManager->getButtonKeys(buttonIndex);
+    const auto& vks = m_configManager->getButtonKeys(static_cast<int>(buttonIndex));
     SendVirtualKeySequence(vks, pressed);
     
     // Log the button event

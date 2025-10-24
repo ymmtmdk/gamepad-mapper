@@ -35,7 +35,7 @@ bool JsonConfigManager::load(const std::string& configPath) {
 
         compileKeyMappings();
         m_loaded = true;
-    } catch (json::exception& e) {
+    } catch (json::exception&) {
         // Failed to parse JSON
         // Consider logging the error e.what()
         return false;

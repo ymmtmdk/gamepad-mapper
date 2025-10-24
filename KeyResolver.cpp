@@ -38,17 +38,17 @@ std::optional<WORD> KeyResolver::parseNumericKey(const std::string& keyName) {
         size_t pos;
         long long_val;
         if (keyName.size() > 2 && (keyName.substr(0, 2) == "0x" || keyName.substr(0, 2) == "0X")) {
-            long_val = std::stoll(keyName, &pos, 16);
+            long_val = static_cast<long>(std::stoll(keyName, &pos, 16));
         } else {
-            long_val = std::stoll(keyName, &pos, 10);
+            long_val = static_cast<long>(std::stoll(keyName, &pos, 10));
         }
 
         if (pos == keyName.size() && long_val >= 0 && long_val <= 0xFFFF) {
             return static_cast<WORD>(long_val);
         }
-    } catch (const std::invalid_argument& e) {
+    } catch (const std::invalid_argument&) {
         // Not a number, which is fine
-    } catch (const std::out_of_range& e) {
+    } catch (const std::out_of_range&) {
         // Number is out of range for long, which is also fine
     }
     return std::nullopt;
