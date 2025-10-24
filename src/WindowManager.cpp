@@ -1,5 +1,6 @@
 #include "WindowManager.h"
 #include "Logger.h"
+#include "resource.h"
 
 WindowManager::WindowManager(HINSTANCE hInstance, const std::wstring& title)
     : m_hInst(hInstance), m_title(title), m_logger(nullptr) {}
@@ -20,6 +21,7 @@ bool WindowManager::Init(int width, int height) {
     wc.hInstance = m_hInst;
     wc.lpszClassName = clsName;
     wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
+    wc.hIcon = LoadIcon(m_hInst, MAKEINTRESOURCE(IDI_GAMEPADMAPPER));
     if (!RegisterClass(&wc)) return false;
 
     m_hWnd = CreateWindowEx(

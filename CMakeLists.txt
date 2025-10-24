@@ -26,6 +26,7 @@ add_executable (GamepadMapper WIN32
   src/WindowManager.cpp
   src/InputProcessor.cpp
   src/WinMain.cpp
+  src/GamepadMapper.rc
 )
 
 # nlohmann_json を検索。vcpkg を利用している場合は vcpkg の toolchain を指定して CMake を呼んでください
