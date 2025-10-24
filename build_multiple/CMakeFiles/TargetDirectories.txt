@@ -1,4 +1,0 @@
-/home/ymmtmdk/code/CMakeProject1/build_multiple/CMakeFiles/CMakeProject1.dir
-/home/ymmtmdk/code/CMakeProject1/build_multiple/CMakeFiles/MultiGamepadMapper.dir
-/home/ymmtmdk/code/CMakeProject1/build_multiple/CMakeFiles/edit_cache.dir
-/home/ymmtmdk/code/CMakeProject1/build_multiple/CMakeFiles/rebuild_cache.dir
