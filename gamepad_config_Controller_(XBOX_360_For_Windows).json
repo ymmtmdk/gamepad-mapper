@@ -1,0 +1,97 @@
+{
+  "config": {
+    "log_level": "info",
+    "stick_threshold": 400
+  },
+  "gamepad": {
+    "buttons": [
+      {
+        "index": 0,
+        "keys": [
+          "z"
+        ]
+      },
+      {
+        "index": 1,
+        "keys": [
+          "x"
+        ]
+      },
+      {
+        "index": 2,
+        "keys": [
+          "c"
+        ]
+      },
+      {
+        "index": 3,
+        "keys": [
+          "v"
+        ]
+      },
+      {
+        "index": 4,
+        "keys": [
+          "printscreen"
+        ]
+      },
+      {
+        "index": 5,
+        "keys": [
+          "win",
+          "x"
+        ]
+      },
+      {
+        "index": 6,
+        "keys": [
+          "ctrl",
+          "c"
+        ]
+      },
+      {
+        "index": 7,
+        "keys": [
+          "alt",
+          "tab"
+        ]
+      },
+      {
+        "index": 8,
+        "keys": [
+          "ctrl",
+          "alt",
+          "delete"
+        ]
+      }
+    ],
+    "dpad": {
+      "down": [
+        "down"
+      ],
+      "left": [
+        "left"
+      ],
+      "right": [
+        "right"
+      ],
+      "up": [
+        "up"
+      ]
+    },
+    "left_stick": {
+      "down": [
+        "s"
+      ],
+      "left": [
+        "a"
+      ],
+      "right": [
+        "d"
+      ],
+      "up": [
+        "w"
+      ]
+    }
+  }
+}
