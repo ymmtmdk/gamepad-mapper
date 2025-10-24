@@ -158,7 +158,7 @@ void Application::LogGamepadStatus()
         // Log individual device status
         auto connectedNames = m_gamepadManager->GetConnectedDeviceNames();
         for (const auto& name : connectedNames) {
-            Logger::GetInstance().AppendFrameLog(L"  • Connected: %s", name.c_str());
+            Logger::GetInstance().AppendFrameLog(L"  Connected: %s", name.c_str());
         }
         
         // If there are disconnected devices, show them too
