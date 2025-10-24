@@ -66,7 +66,7 @@ bool Application::InitializeLogger()
 
 bool Application::InitializeWindow()
 {
-    m_windowManager = std::make_unique<WindowManager>(m_hInstance, L"Multi-Gamepad Mapper", &Logger::GetInstance());
+    m_windowManager = std::make_unique<WindowManager>(m_hInstance, L"Gamepad Mapper", &Logger::GetInstance());
     if (!m_windowManager->Init(WINDOW_WIDTH, WINDOW_HEIGHT)) {
         MessageBox(nullptr, L"Window initialization failed!", L"Error", MB_ICONERROR);
         return false;
