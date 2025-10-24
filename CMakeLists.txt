@@ -1,7 +1,7 @@
 ﻿# CMakeList.txt : CMakeProject1 の CMake プロジェクト。ソースを含めて、次を定義します:
 # プロジェクト専用ロジックはこちらです。
 #
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.10)
 project(CMakeProject1 LANGUAGES CXX)
 
 # C++20 を指定
@@ -31,10 +31,11 @@ find_package(nlohmann_json CONFIG QUIET)
 # Unicodeを有効にする
 add_compile_definitions(UNICODE _UNICODE)
 
-# 静的リンクを設定 
-# TODO
 target_link_options(CMakeProject1 PRIVATE -municode)
-target_link_options(CMakeProject1 PRIVATE -municode -static)
+if(MINGW)
+  # 静的リンクを設定 
+  target_link_options(CMakeProject1 PRIVATE -static)
+endif()
 
 target_link_libraries(CMakeProject1 PRIVATE dinput8 dxguid user32 gdi32)
 target_link_libraries(CMakeProject1 PRIVATE nlohmann_json::nlohmann_json)
