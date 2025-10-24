@@ -1,27 +1,27 @@
 #!/bin/bash
 
-# 複数ゲームパッド対応版のビルドスクリプト
+# ゲームパッドマッパーのビルドスクリプト (複数デバイス対応版)
 
-echo "Building Multiple Gamepad Mapper..."
+echo "Building Gamepad Mapper..."
 
 # ビルドディレクトリを作成
-mkdir -p build_multiple
-cd build_multiple
+mkdir -p build
+cd build
 
 # CMakeを実行
 cmake .. -DCMAKE_TOOLCHAIN_FILE=../mingw-w64-toolchain.cmake
 
 # ビルド実行
-make MultiGamepadMapper
+make GamepadMapper
 
 if [ $? -eq 0 ]; then
     echo "Build successful!"
-    echo "Executable: MultiGamepadMapper.exe"
+    echo "Executable: GamepadMapper.exe"
     
     # 実行ファイルをメインディレクトリにコピー
-    cp MultiGamepadMapper.exe ../
+    cp GamepadMapper.exe ../
     
-    echo "MultiGamepadMapper.exe copied to main directory."
+    echo "GamepadMapper.exe copied to main directory."
 else
     echo "Build failed!"
     exit 1

@@ -6,13 +6,16 @@
 #include "Constants.h"
 #include "ILogger.h"
 
-#include "JsonConfigManager.h"
-
 // Forward declarations
 class WindowManager;
-class InputProcessor;
-class DirectInputManager;
+class MultipleGamepadManager;
 
+/**
+ * @brief Main application class with multiple gamepad support
+ * 
+ * This is the updated Application class that supports multiple gamepad devices
+ * simultaneously, each with their own configuration files and input processing.
+ */
 class Application {
 public:
     // Constructor/Destructor (RAII)
@@ -37,10 +40,8 @@ public:
 private:
     // Initialization methods
     bool InitializeLogger();
-    bool InitializeConfiguration();
     bool InitializeWindow();
-    bool InitializeDirectInput();
-    bool InitializeInputProcessor();
+    bool InitializeGamepadManager();
     
     // Main loop methods
     void ProcessMessages();
@@ -52,13 +53,12 @@ private:
     // Helper methods
     std::string GenerateLogPath() const;
     void CleanupResources();
+    void LogGamepadStatus();
     
     // Application components (dependency injection pattern)
     HINSTANCE m_hInstance;
     std::unique_ptr<WindowManager> m_windowManager;
-    std::unique_ptr<JsonConfigManager> m_configManager;
-    std::unique_ptr<InputProcessor> m_inputProcessor;
-    std::unique_ptr<DirectInputManager> m_directInputManager;
+    std::unique_ptr<MultipleGamepadManager> m_gamepadManager;
     
     // Application state
     bool m_running;
@@ -66,7 +66,6 @@ private:
     
     // Runtime data
     MSG m_msg;
-    DIJOYSTATE2 m_joystickState;
     
     // Configuration
     static constexpr int WINDOW_WIDTH = AppConstants::WINDOW_WIDTH;

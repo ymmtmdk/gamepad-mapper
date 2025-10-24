@@ -1,19 +1,18 @@
 #include "Application.h"
 #include "WindowManager.h"
-#include "JsonConfigManager.h"
-#include "InputProcessor.h"
-#include "DirectInputManager.h"
+#include "MultipleGamepadManager.h"
+#include "GamepadDevice.h"
 #include "Logger.h"
 #include <memory>
 #include <stdexcept>
 #include <filesystem>
+#include <algorithm>
 
 Application::Application(HINSTANCE hInstance)
     : m_hInstance(hInstance)
     , m_running(false)
     , m_initialized(false)
     , m_msg{}
-    , m_joystickState{}
 {
 }
 
@@ -34,28 +33,18 @@ bool Application::Initialize()
             throw std::runtime_error("Logger initialization failed");
         }
         
-        if (!InitializeConfiguration()) {
-            CleanupResources();
-            throw std::runtime_error("Configuration initialization failed");
-        }
-        
         if (!InitializeWindow()) {
             CleanupResources();
             throw std::runtime_error("Window initialization failed");
         }
         
-        if (!InitializeDirectInput()) {
+        if (!InitializeGamepadManager()) {
             CleanupResources();
-            throw std::runtime_error("DirectInput initialization failed");
-        }
-        
-        if (!InitializeInputProcessor()) {
-            CleanupResources();
-            throw std::runtime_error("InputProcessor initialization failed");
+            throw std::runtime_error("Gamepad Manager initialization failed");
         }
         
         m_initialized = true;
-        LOG_WRITE("Application initialization completed successfully.");
+        LOG_WRITE("Application initialization completed successfully with multiple gamepad support.");
         return true;
         
     } catch (const std::exception& e) {
@@ -75,20 +64,9 @@ bool Application::InitializeLogger()
     return true;
 }
 
-bool Application::InitializeConfiguration()
-{
-    m_configManager = std::make_unique<JsonConfigManager>();
-    if (!m_configManager->isLoaded()) {
-        MessageBox(nullptr, L"Failed to load gamepad configuration!", L"Error", MB_ICONERROR);
-        return false;
-    }
-    
-    return true;
-}
-
 bool Application::InitializeWindow()
 {
-    m_windowManager = std::make_unique<WindowManager>(m_hInstance, L"Gamepad Mapper", &Logger::GetInstance());
+    m_windowManager = std::make_unique<WindowManager>(m_hInstance, L"Multi-Gamepad Mapper", &Logger::GetInstance());
     if (!m_windowManager->Init(WINDOW_WIDTH, WINDOW_HEIGHT)) {
         MessageBox(nullptr, L"Window initialization failed!", L"Error", MB_ICONERROR);
         return false;
@@ -96,21 +74,17 @@ bool Application::InitializeWindow()
     return true;
 }
 
-bool Application::InitializeDirectInput()
+bool Application::InitializeGamepadManager()
 {
-    m_directInputManager = std::make_unique<DirectInputManager>();
-    if (!m_directInputManager->Initialize(m_hInstance, m_windowManager->GetHwnd())) {
+    m_gamepadManager = std::make_unique<MultipleGamepadManager>();
+    if (!m_gamepadManager->Initialize(m_hInstance, m_windowManager->GetHwnd())) {
         // This will only fail in case of a fatal error, like DirectInput8Create failing.
-        MessageBox(nullptr, L"A critical error occurred while initializing DirectInput.", L"Fatal Error", MB_ICONERROR);
+        MessageBox(nullptr, L"A critical error occurred while initializing Multiple Gamepad Manager.", L"Fatal Error", MB_ICONERROR);
         return false;
     }
-    return true;
-}
-
-bool Application::InitializeInputProcessor()
-{
-    m_inputProcessor = std::make_unique<InputProcessor>(*m_configManager);
     
+    // Log initial gamepad status
+    LogGamepadStatus();
     
     return true;
 }
@@ -124,7 +98,7 @@ int Application::Run()
     }
     
     m_running = true;
-    LOG_WRITE("Polling started... press Esc or close the window to quit.");
+    LOG_WRITE("Multi-gamepad polling started... press Esc or close the window to quit.");
     
     // Main application loop
     while (m_running && m_windowManager->IsRunning()) {
@@ -158,43 +132,64 @@ void Application::UpdateFrame()
     Logger::GetInstance().ClearFrameLog();
     
     // Display gamepad information at the top
-    if (m_directInputManager) {
-        Logger::GetInstance().AppendGamepadInfo(
-            m_directInputManager->IsDeviceConnected(),
-            m_directInputManager->GetDeviceName().c_str(),
-            m_directInputManager->GetDeviceInstanceName().c_str()
-        );
-    }
+    LogGamepadStatus();
     
     ProcessGamepadInput();
     UpdateDisplay();
     CheckExitConditions();
 }
 
-void Application::ProcessGamepadInput()
+void Application::LogGamepadStatus()
 {
-    if (!m_directInputManager) {
+    if (!m_gamepadManager) {
         return;
     }
-
-    if (m_directInputManager->IsDeviceConnected()) {
-        if (m_directInputManager->PollAndGetState(m_joystickState)) {
-            Logger::GetInstance().AppendState(m_joystickState);
-            if (m_inputProcessor) {
-                m_inputProcessor->ProcessGamepadInput(m_joystickState);
-            }
-        } else {
-            LOG_WRITE("Gamepad disconnected. Waiting for reconnection...");
-        }
+    
+    size_t totalDevices = m_gamepadManager->GetDeviceCount();
+    size_t connectedDevices = m_gamepadManager->GetConnectedDeviceCount();
+    
+    if (totalDevices == 0) {
+        Logger::GetInstance().AppendLog(L"No gamepad devices found. Scanning for devices...");
     } else {
-        Logger::GetInstance().AppendLog(L"Waiting for gamepad connection...");
+        // Log summary using AppendFrameLog for formatted output
+        Logger::GetInstance().AppendFrameLog(L"Gamepad Status: %zu/%zu devices connected", 
+                                           connectedDevices, totalDevices);
         
-        static DWORD last_retry_time = 0;
-        DWORD current_time = GetTickCount();
-        if (current_time - last_retry_time > 5000) { // Retry every 5 seconds
-            m_directInputManager->TryToReconnect();
-            last_retry_time = current_time;
+        // Log individual device status
+        auto connectedNames = m_gamepadManager->GetConnectedDeviceNames();
+        for (const auto& name : connectedNames) {
+            Logger::GetInstance().AppendFrameLog(L"  • Connected: %s", name.c_str());
         }
+        
+        // If there are disconnected devices, show them too
+        auto allNames = m_gamepadManager->GetAllDeviceNames();
+        for (const auto& name : allNames) {
+            // Check if this device is in the connected list
+            auto it = std::find(connectedNames.begin(), connectedNames.end(), name);
+            bool isConnected = (it != connectedNames.end());
+            if (!isConnected) {
+                Logger::GetInstance().AppendFrameLog(L"  • Disconnected: %s", name.c_str());
+            }
+        }
+    }
+}
+
+void Application::ProcessGamepadInput()
+{
+    if (!m_gamepadManager) {
+        return;
+    }
+    
+    if (m_gamepadManager->HasAnyConnectedDevices()) {
+        // Process all connected devices
+        m_gamepadManager->ProcessAllDevices();
+    } else {
+        // No devices connected, show waiting message
+        Logger::GetInstance().AppendLog(L"Waiting for gamepad connections...");
+        
+        // The gamepad manager will automatically scan for new devices periodically
+        // We just need to call ProcessAllDevices to trigger the scan
+        m_gamepadManager->ProcessAllDevices();
     }
 }
 
@@ -230,15 +225,12 @@ void Application::Shutdown()
 void Application::CleanupResources()
 {
     // Clean up components in reverse order
-    m_inputProcessor.reset();
-    
-    if (m_directInputManager) {
-        m_directInputManager->Shutdown();
-        m_directInputManager.reset();
+    if (m_gamepadManager) {
+        m_gamepadManager->Shutdown();
+        m_gamepadManager.reset();
     }
     
     m_windowManager.reset();
-    m_configManager.reset();
     
     // Close logger
     Logger::GetInstance().Close();
@@ -249,5 +241,5 @@ std::string Application::GenerateLogPath() const
     wchar_t exePath[MAX_PATH];
     GetModuleFileNameW(nullptr, exePath, MAX_PATH);
 
-    return (std::filesystem::path(exePath).parent_path() / "gamepad_mapper.log").string();
+    return (std::filesystem::path(exePath).parent_path() / "multi_gamepad_mapper.log").string();
 }
