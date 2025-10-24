@@ -31,8 +31,10 @@ find_package(nlohmann_json CONFIG QUIET)
 # Unicodeを有効にする
 add_compile_definitions(UNICODE _UNICODE)
 
-# 静的リンクを設定
+# 静的リンクを設定 
+# TODO
 target_link_options(CMakeProject1 PRIVATE -municode)
+target_link_options(CMakeProject1 PRIVATE -municode -static)
 
 target_link_libraries(CMakeProject1 PRIVATE dinput8 dxguid user32 gdi32)
 target_link_libraries(CMakeProject1 PRIVATE nlohmann_json::nlohmann_json)
