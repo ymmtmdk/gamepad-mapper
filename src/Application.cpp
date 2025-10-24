@@ -1,5 +1,5 @@
 #include "Application.h"
-#include "WindowManager.h"
+#include "EnhancedWindowManager.h"
 #include "MultipleGamepadManager.h"
 #include "GamepadDevice.h"
 #include "Logger.h"
@@ -66,7 +66,7 @@ bool Application::InitializeLogger()
 
 bool Application::InitializeWindow()
 {
-    m_windowManager = std::make_unique<WindowManager>(m_hInstance, L"Multi-Gamepad Mapper", &Logger::GetInstance());
+    m_windowManager = std::make_unique<EnhancedWindowManager>(m_hInstance, L"Multi-Gamepad Mapper - Enhanced UI", &Logger::GetInstance());
     if (!m_windowManager->Init(WINDOW_WIDTH, WINDOW_HEIGHT)) {
         MessageBox(nullptr, L"Window initialization failed!", L"Error", MB_ICONERROR);
         return false;
@@ -81,6 +81,12 @@ bool Application::InitializeGamepadManager()
         // This will only fail in case of a fatal error, like DirectInput8Create failing.
         MessageBox(nullptr, L"A critical error occurred while initializing Multiple Gamepad Manager.", L"Fatal Error", MB_ICONERROR);
         return false;
+    }
+    
+    // Connect gamepad manager to enhanced window manager
+    auto* enhancedWindowManager = dynamic_cast<EnhancedWindowManager*>(m_windowManager.get());
+    if (enhancedWindowManager) {
+        enhancedWindowManager->SetGamepadManager(m_gamepadManager.get());
     }
     
     // Log initial gamepad status

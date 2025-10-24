@@ -7,7 +7,7 @@ class WindowManager {
 public:
     WindowManager(HINSTANCE hInstance, const std::wstring& title);
     WindowManager(HINSTANCE hInstance, const std::wstring& title, ILogger* logger);
-    ~WindowManager();
+    virtual ~WindowManager();
 
     bool Init(int width, int height);
     HWND GetHwnd() const { return m_hWnd; }
@@ -17,9 +17,11 @@ public:
     // Dependency injection
     void SetLogger(ILogger* logger) { m_logger = logger; }
 
-private:
+protected:
     static LRESULT CALLBACK StaticWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-    LRESULT MemberWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+    virtual LRESULT MemberWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
+protected:
 
     HINSTANCE m_hInst = nullptr;
     HWND m_hWnd = nullptr;
