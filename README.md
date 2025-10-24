@@ -237,3 +237,10 @@ Gamepad Status: 2/2 devices connected
 
 詳細な動作ログは `multi_gamepad_mapper.log` に出力されます。
 
+## 📝 ライセンス
+
+このプロジェクトはオープンソースソフトウェアです。
+
+## 🤝 貢献
+
+バグ報告や機能要望は、プロジェクトのIssueトラッカーまでお願いします。

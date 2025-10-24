@@ -24,8 +24,6 @@ add_executable (GamepadMapper WIN32
   src/JsonConfigManager.cpp
   src/Logger.cpp
   src/WindowManager.cpp
-  src/EnhancedWindowManager.cpp
-  src/EnhancedRenderer.cpp
   src/InputProcessor.cpp
   src/WinMain.cpp)
 

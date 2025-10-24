@@ -7,7 +7,7 @@
 #include "ILogger.h"
 
 // Forward declarations
-class EnhancedWindowManager;
+class WindowManager;
 class MultipleGamepadManager;
 
 /**
@@ -57,7 +57,7 @@ private:
     
     // Application components (dependency injection pattern)
     HINSTANCE m_hInstance;
-    std::unique_ptr<EnhancedWindowManager> m_windowManager;
+    std::unique_ptr<WindowManager> m_windowManager;
     std::unique_ptr<MultipleGamepadManager> m_gamepadManager;
     
     // Application state
