@@ -48,33 +48,3 @@ if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET GamepadMapper PROPERTY CXX_STANDARD 20)
 endif()
 
-#if(CMAKE_CROSSCOMPILING)
-    # Windows向けクロスコンパイル環境での設定例
-    # Wineがインストールされている場合
-    # set(CROSSCOMPILING_EMULATOR "/usr/bin/wine")
-    #endif()
-
-# テストを有効化
-enable_testing()
-
-# テスト対象のライブラリを作成
-add_library(my_function_lib my_function.cpp)
-# my_function.hへのインクルードパスを追加
-target_include_directories(my_function_lib PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
-
-# GTestパッケージを検索
-find_package(GTest CONFIG REQUIRED)
-
-# テスト実行可能ファイルを作成
-add_executable(my_function_test test/my_function_test.cpp)
-
-target_link_libraries(my_function_test
-    PRIVATE
-        my_function_lib
-        GTest::gtest_main
-)
-
-# CTestにテストとして登録
-# add_testはC++17以降でGTestがfind_packageされた場合に不要になることもあるが、明示的に記述しておくと安全
-add_test(NAME MyFunctionTests COMMAND my_function_test)
-
