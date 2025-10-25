@@ -1,6 +1,7 @@
 #include "MultipleGamepadManager.h"
 #include "GamepadDevice.h"
 #include "Logger.h"
+#include "ModernLogger.h"
 #include <algorithm>
 #include <sstream>
 #include <iomanip>
@@ -20,11 +21,11 @@ MultipleGamepadManager::~MultipleGamepadManager()
 bool MultipleGamepadManager::Initialize(HINSTANCE hInst, HWND hWnd)
 {
     if (m_initialized) {
-        LOG_WRITE("MultipleGamepadManager already initialized.");
+        LOG_INFO("MultipleGamepadManager already initialized.");
         return true;
     }
     
-    LOG_WRITE("Initializing MultipleGamepadManager...");
+    LOG_INFO("Initializing MultipleGamepadManager...");
     m_hWnd = hWnd;
     
     if (!CreateDirectInput(hInst)) {
@@ -35,7 +36,7 @@ bool MultipleGamepadManager::Initialize(HINSTANCE hInst, HWND hWnd)
     ScanForDevices();
     
     m_initialized = true;
-    LOG_WRITE("MultipleGamepadManager initialization completed. Found %zu devices.", m_devices.size());
+    LOG_INFO("MultipleGamepadManager initialization completed. Found {} devices.", m_devices.size());
     
     return true;
 }
@@ -46,7 +47,7 @@ void MultipleGamepadManager::Shutdown()
         return;
     }
     
-    LOG_WRITE("Shutting down MultipleGamepadManager...");
+    LOG_INFO("Shutting down MultipleGamepadManager...");
     
     // Shutdown all devices
     for (auto& device : m_devices) {
@@ -63,7 +64,7 @@ void MultipleGamepadManager::Shutdown()
     m_directInput.Reset();
     
     m_initialized = false;
-    LOG_WRITE("MultipleGamepadManager shutdown complete.");
+    LOG_INFO("MultipleGamepadManager shutdown complete.");
 }
 
 bool MultipleGamepadManager::CreateDirectInput(HINSTANCE hInst)
@@ -72,11 +73,11 @@ bool MultipleGamepadManager::CreateDirectInput(HINSTANCE hInst)
                                    reinterpret_cast<void**>(m_directInput.GetAddressOf()), nullptr);
     
     if (FAILED(hr)) {
-        LOG_WRITE("DirectInput8Create failed. HRESULT: 0x%08X", hr);
+        LOG_ERROR("DirectInput8Create failed. HRESULT: 0x{:08X}", hr);
         return false;
     }
     
-    LOG_WRITE("DirectInput8 created successfully for multiple gamepad management.");
+    LOG_INFO("DirectInput8 created successfully for multiple gamepad management.");
     return true;
 }
 
@@ -86,7 +87,7 @@ void MultipleGamepadManager::ScanForDevices()
         return;
     }
     
-    LOG_WRITE("Scanning for gamepad devices...");
+    LOG_INFO("Scanning for gamepad devices...");
     
     // Clear the index map for rebuilding
     m_deviceIndexByGUID.clear();
@@ -95,7 +96,7 @@ void MultipleGamepadManager::ScanForDevices()
                                            this, DIEDFL_ATTACHEDONLY);
     
     if (FAILED(hr)) {
-        LOG_WRITE("EnumDevices failed. HRESULT: 0x%08X", hr);
+        LOG_ERROR("EnumDevices failed. HRESULT: 0x{:08X}", hr);
         return;
     }
     
@@ -122,7 +123,7 @@ void MultipleGamepadManager::ScanForDevices()
     // Clean up any devices that are no longer connected
     CleanupDisconnectedDevices();
     
-    LOG_WRITE("Device scan completed. Managing %zu devices.", m_devices.size());
+    LOG_INFO("Device scan completed. Managing {} devices.", m_devices.size());
     m_lastScanTime = GetTickCount();
 }
 
@@ -136,7 +137,7 @@ void MultipleGamepadManager::CleanupDisconnectedDevices()
     
     if (it != m_devices.end()) {
         size_t removedCount = std::distance(it, m_devices.end());
-        LOG_WRITE("Removing %zu disconnected devices.", removedCount);
+        LOG_INFO("Removing {} disconnected devices.", removedCount);
         m_devices.erase(it, m_devices.end());
     }
 }
@@ -168,7 +169,7 @@ void MultipleGamepadManager::ProcessAllDevices()
             // Log which device is being processed (only occasionally to avoid spam)
             static int logCounter = 0;
             if (logCounter++ % 1000 == 0) {
-                LOG_WRITE_W(L"Processing device %zu: %s", i, device->GetName().c_str());
+                LOG_DEBUG_W(L"Processing device " + std::to_wstring(i) + L": " + device->GetName());
             }
             device->ProcessInput();
         }
@@ -268,15 +269,17 @@ BOOL CALLBACK MultipleGamepadManager::EnumDevicesCallback(const DIDEVICEINSTANCE
     // Create a new GamepadDevice
     auto newDevice = std::make_unique<GamepadDevice>();
     
+    // Inject display buffer dependency
+    if (manager->m_displayBuffer) {
+        newDevice->SetDisplayBuffer(manager->m_displayBuffer);
+    }
+    
     if (newDevice->Initialize(manager->m_directInput.Get(), pdidInstance, manager->m_hWnd)) {
-        LOG_WRITE_W(L"New gamepad device added: %s (%s)",
-                   newDevice->GetName().c_str(),
-                   newDevice->GetInstanceName().c_str());
+        LOG_INFO_W(L"New gamepad device added: " + newDevice->GetName() + L" (" + newDevice->GetInstanceName() + L")");
         
         manager->m_devices.push_back(std::move(newDevice));
     } else {
-        LOG_WRITE_W(L"Failed to initialize gamepad device: %s",
-                   pdidInstance->tszProductName);
+        LOG_ERROR_W(L"Failed to initialize gamepad device: " + std::wstring(pdidInstance->tszProductName));
     }
     
     return DIENUM_CONTINUE; // Continue enumeration to find all devices

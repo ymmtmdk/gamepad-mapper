@@ -1,5 +1,7 @@
 #include "WindowManager.h"
 #include "Logger.h"
+#include "ModernLogger.h"
+#include "DisplayBuffer.h"
 #include "resource.h"
 
 WindowManager::WindowManager(HINSTANCE hInstance, const std::wstring& title)
@@ -7,6 +9,9 @@ WindowManager::WindowManager(HINSTANCE hInstance, const std::wstring& title)
 
 WindowManager::WindowManager(HINSTANCE hInstance, const std::wstring& title, ILogger* logger)
     : m_hInst(hInstance), m_title(title), m_logger(logger) {}
+
+WindowManager::WindowManager(HINSTANCE hInstance, const std::wstring& title, IDisplayBuffer* displayBuffer)
+    : m_hInst(hInstance), m_title(title), m_displayBuffer(displayBuffer) {}
 
 WindowManager::~WindowManager() {
     if (m_hWnd) {
@@ -76,10 +81,12 @@ LRESULT WindowManager::MemberWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
         HBRUSH hbr = (HBRUSH)(COLOR_WINDOW + 1);
         FillRect(hdc, &rc, hbr);
 
-        // Use injected logger if available, fallback to singleton
-        const auto& logLines = m_logger ? 
-            m_logger->GetFrameLog() : 
-            Logger::GetInstance().GetFrameLog();
+        // Use injected display buffer if available, fallback to logger
+        const auto& logLines = m_displayBuffer ? 
+            m_displayBuffer->GetLines() : 
+            (m_logger ? 
+                m_logger->GetFrameLog() : 
+                ModernLogger::GetInstance().GetFrameLog());
         TEXTMETRIC tm;
         GetTextMetrics(hdc, &tm);
         int y = 4;

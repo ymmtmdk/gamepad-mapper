@@ -9,6 +9,7 @@
 // Forward declarations
 class WindowManager;
 class MultipleGamepadManager;
+class IDisplayBuffer;
 
 /**
  * @brief Main application class with multiple gamepad support
@@ -59,6 +60,7 @@ private:
     HINSTANCE m_hInstance;
     std::unique_ptr<WindowManager> m_windowManager;
     std::unique_ptr<MultipleGamepadManager> m_gamepadManager;
+    std::unique_ptr<IDisplayBuffer> m_displayBuffer;
     
     // Application state
     bool m_running;

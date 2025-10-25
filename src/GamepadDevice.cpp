@@ -2,6 +2,8 @@
 #include "JsonConfigManager.h"
 #include "InputProcessor.h"
 #include "Logger.h"
+#include "ModernLogger.h"
+#include "IDisplayBuffer.h"
 #include <algorithm>
 #include <filesystem>
 
@@ -33,13 +35,13 @@ bool GamepadDevice::Initialize(IDirectInput8* pDirectInput, const DIDEVICEINSTAN
     // Create device
     HRESULT hr = pDirectInput->CreateDevice(deviceInstance->guidInstance, m_device.GetAddressOf(), nullptr);
     if (FAILED(hr)) {
-        LOG_WRITE_W(L"Failed to create device: %s. HRESULT: 0x%08X", m_deviceName.c_str(), hr);
+        LOG_ERROR_W(L"Failed to create device: " + m_deviceName + L". HRESULT: 0x" + std::to_wstring(hr));
         return false;
     }
     
     // Configure device
     if (!ConfigureDevice(hWnd)) {
-        LOG_WRITE_W(L"Failed to configure device: %s", m_deviceName.c_str());
+        LOG_ERROR_W(L"Failed to configure device: " + m_deviceName);
         return false;
     }
     
@@ -344,11 +346,14 @@ void GamepadDevice::ProcessInput()
     }
     
     if (PollAndGetState()) {
-        // Add device name prefix to frame log for identification
-        FRAME_LOG_APPEND(L"[%s]", m_deviceName.c_str());
-        
-        // Log the current state for this device
-        Logger::GetInstance().AppendState(m_currentState);
+        // Add device state to display buffer if available
+        if (m_displayBuffer) {
+            m_displayBuffer->AddGamepadState(m_deviceName, m_currentState);
+        } else {
+            // Fallback to old logger for compatibility
+            ModernLogger::GetInstance().AppendFrameLog(L"[%s]", m_deviceName.c_str());
+            ModernLogger::GetInstance().AppendState(m_currentState);
+        }
         
         // Process the input with device context
         m_inputProcessor->ProcessGamepadInput(m_currentState);

@@ -9,6 +9,7 @@
 
 // Forward declarations
 class GamepadDevice;
+class IDisplayBuffer;
 
 // ComPtr alias for convenience
 template<typename T>
@@ -50,6 +51,9 @@ public:
     std::vector<std::wstring> GetConnectedDeviceNames() const;
     std::vector<std::wstring> GetAllDeviceNames() const;
     
+    // Dependency injection
+    void SetDisplayBuffer(IDisplayBuffer* displayBuffer) { m_displayBuffer = displayBuffer; }
+    
     // State queries
     bool IsInitialized() const { return m_initialized; }
     bool HasAnyConnectedDevices() const;
@@ -70,6 +74,9 @@ private:
     // Initialization state
     bool m_initialized;
     HWND m_hWnd;
+    
+    // Dependencies
+    IDisplayBuffer* m_displayBuffer = nullptr;
     
     // Device tracking
     std::unordered_map<std::string, size_t> m_deviceIndexByGUID; // GUID string -> device index

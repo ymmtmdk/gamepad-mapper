@@ -2,11 +2,13 @@
 #include <windows.h>
 #include <string>
 #include "ILogger.h"
+#include "IDisplayBuffer.h"
 
 class WindowManager {
 public:
     WindowManager(HINSTANCE hInstance, const std::wstring& title);
     WindowManager(HINSTANCE hInstance, const std::wstring& title, ILogger* logger);
+    WindowManager(HINSTANCE hInstance, const std::wstring& title, IDisplayBuffer* displayBuffer);
     ~WindowManager();
 
     bool Init(int width, int height);
@@ -16,6 +18,7 @@ public:
     
     // Dependency injection
     void SetLogger(ILogger* logger) { m_logger = logger; }
+    void SetDisplayBuffer(IDisplayBuffer* displayBuffer) { m_displayBuffer = displayBuffer; }
 
 private:
     static LRESULT CALLBACK StaticWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -25,5 +28,6 @@ private:
     HWND m_hWnd = nullptr;
     std::wstring m_title;
     bool m_running = true;
-    ILogger* m_logger = nullptr; // Injected dependency
+    ILogger* m_logger = nullptr; // Injected dependency (legacy)
+    IDisplayBuffer* m_displayBuffer = nullptr; // Injected dependency (new)
 };

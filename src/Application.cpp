@@ -3,6 +3,8 @@
 #include "MultipleGamepadManager.h"
 #include "GamepadDevice.h"
 #include "Logger.h"
+#include "ModernLogger.h"
+#include "DisplayBuffer.h"
 #include <memory>
 #include <stdexcept>
 #include <filesystem>
@@ -44,11 +46,11 @@ bool Application::Initialize()
         }
         
         m_initialized = true;
-        LOG_WRITE("Application initialization completed successfully with multiple gamepad support.");
+        LOG_INFO("Application initialization completed successfully with multiple gamepad support.");
         return true;
         
     } catch (const std::exception& e) {
-        LOG_WRITE("Initialization failed: %s", e.what());
+        LOG_ERROR("Initialization failed: {}", e.what());
         CleanupResources();
         return false;
     }
@@ -57,16 +59,21 @@ bool Application::Initialize()
 bool Application::InitializeLogger()
 {
     std::string logPath = GenerateLogPath();
-    if (!Logger::GetInstance().Init(logPath)) {
+    if (!ModernLogger::GetInstance().Init(logPath)) {
         MessageBox(nullptr, L"Failed to initialize log file!", L"Error", MB_ICONERROR);
         return false;
     }
+
+    // Initialize display buffer for screen output
+    m_displayBuffer = std::make_unique<DisplayBuffer>(150); // Allow more lines for better debugging
+    m_displayBuffer->SetTimestampEnabled(false); // Keep display clean
+    m_displayBuffer->SetAutoSeparator(true);
     return true;
 }
 
 bool Application::InitializeWindow()
 {
-    m_windowManager = std::make_unique<WindowManager>(m_hInstance, L"Gamepad Mapper", &Logger::GetInstance());
+    m_windowManager = std::make_unique<WindowManager>(m_hInstance, L"Gamepad Mapper", m_displayBuffer.get());
     if (!m_windowManager->Init(WINDOW_WIDTH, WINDOW_HEIGHT)) {
         MessageBox(nullptr, L"Window initialization failed!", L"Error", MB_ICONERROR);
         return false;
@@ -77,6 +84,10 @@ bool Application::InitializeWindow()
 bool Application::InitializeGamepadManager()
 {
     m_gamepadManager = std::make_unique<MultipleGamepadManager>();
+    
+    // Inject display buffer dependency
+    m_gamepadManager->SetDisplayBuffer(m_displayBuffer.get());
+    
     if (!m_gamepadManager->Initialize(m_hInstance, m_windowManager->GetHwnd())) {
         // This will only fail in case of a fatal error, like DirectInput8Create failing.
         MessageBox(nullptr, L"A critical error occurred while initializing Multiple Gamepad Manager.", L"Fatal Error", MB_ICONERROR);
@@ -98,7 +109,7 @@ int Application::Run()
     }
     
     m_running = true;
-    LOG_WRITE("Multi-gamepad polling started... press Esc or close the window to quit.");
+    LOG_INFO("Multi-gamepad polling started... press Esc or close the window to quit.");
     
     // Main application loop
     while (m_running && m_windowManager->IsRunning()) {
@@ -129,7 +140,7 @@ void Application::ProcessMessages()
 void Application::UpdateFrame()
 {
     // Clear frame log for this frame
-    Logger::GetInstance().ClearFrameLog();
+    m_displayBuffer->Clear();
     
     // Display gamepad information at the top
     LogGamepadStatus();
@@ -149,16 +160,16 @@ void Application::LogGamepadStatus()
     size_t connectedDevices = m_gamepadManager->GetConnectedDeviceCount();
     
     if (totalDevices == 0) {
-        Logger::GetInstance().AppendLog(L"No gamepad devices found. Scanning for devices...");
+        m_displayBuffer->AddLine(L"No gamepad devices found. Scanning for devices...");
     } else {
-        // Log summary using AppendFrameLog for formatted output
-        Logger::GetInstance().AppendFrameLog(L"Gamepad Status: %zu/%zu devices connected", 
-                                           connectedDevices, totalDevices);
+        // Log summary using DisplayBuffer for formatted output
+        m_displayBuffer->AddFormattedLine(L"Gamepad Status: %zu/%zu devices connected", 
+                                         connectedDevices, totalDevices);
         
         // Log individual device status
         auto connectedNames = m_gamepadManager->GetConnectedDeviceNames();
         for (const auto& name : connectedNames) {
-            Logger::GetInstance().AppendFrameLog(L"  Connected: %s", name.c_str());
+            m_displayBuffer->AddFormattedLine(L"  Connected: %s", name.c_str());
         }
         
         // If there are disconnected devices, show them too
@@ -168,7 +179,7 @@ void Application::LogGamepadStatus()
             auto it = std::find(connectedNames.begin(), connectedNames.end(), name);
             bool isConnected = (it != connectedNames.end());
             if (!isConnected) {
-                Logger::GetInstance().AppendFrameLog(L"  • Disconnected: %s", name.c_str());
+                m_displayBuffer->AddFormattedLine(L"  • Disconnected: %s", name.c_str());
             }
         }
     }
@@ -185,7 +196,7 @@ void Application::ProcessGamepadInput()
         m_gamepadManager->ProcessAllDevices();
     } else {
         // No devices connected, show waiting message
-        Logger::GetInstance().AppendLog(L"Waiting for gamepad connections...");
+        m_displayBuffer->AddLine(L"Waiting for gamepad connections...");
         
         // The gamepad manager will automatically scan for new devices periodically
         // We just need to call ProcessAllDevices to trigger the scan
@@ -219,7 +230,7 @@ void Application::Shutdown()
     CleanupResources();
     m_initialized = false;
     
-    LOG_WRITE("Application shutdown completed.");
+    LOG_INFO("Application shutdown completed.");
 }
 
 void Application::CleanupResources()
@@ -233,7 +244,7 @@ void Application::CleanupResources()
     m_windowManager.reset();
     
     // Close logger
-    Logger::GetInstance().Close();
+    ModernLogger::GetInstance().Close();
 }
 
 std::string Application::GenerateLogPath() const
