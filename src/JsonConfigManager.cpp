@@ -2,28 +2,18 @@
 #include "KeyResolver.h"
 #include <fstream>
 #include <nlohmann/json.hpp>
+#include <utility>
 
 using json = nlohmann::json;
 
-JsonConfigManager::JsonConfigManager() : m_loaded(false) {
-    // Attempt to load the default config file.
-    // If it fails, a default config will be created and loaded.
-    load();
+JsonConfigManager::JsonConfigManager(std::string configPath) 
+    : m_configPath(std::move(configPath)), m_loaded(false) {
 }
 
-bool JsonConfigManager::load(const std::string& configPath) {
-    m_configPath = configPath;
+bool JsonConfigManager::load() {
     std::ifstream configFile(m_configPath);
-
     if (!configFile.is_open()) {
-        // If the file doesn't exist, create a default one.
-        createDefaultConfig();
-        // Try to open it again.
-        configFile.open(m_configPath);
-        if (!configFile.is_open()) {
-            // If it still fails, something is wrong.
-            return false;
-        }
+        return false; // File doesn't exist or cannot be opened
     }
 
     try {
@@ -44,8 +34,8 @@ bool JsonConfigManager::load(const std::string& configPath) {
     return true;
 }
 
-bool JsonConfigManager::save(const std::string& configPath) const {
-    std::ofstream configFile(configPath);
+bool JsonConfigManager::save() const {
+    std::ofstream configFile(m_configPath);
     if (!configFile.is_open()) {
         return false;
     }
@@ -58,12 +48,19 @@ bool JsonConfigManager::save(const std::string& configPath) const {
     return true;
 }
 
-void JsonConfigManager::createDefaultConfig() {
-    // This function is called when the config file is not found.
-    // It populates the members with default values and then saves them.
+void JsonConfigManager::setConfig(const GamepadConfig& gamepad, const SystemConfig& system) {
+    m_gamepad = gamepad;
+    m_system = system;
+    compileKeyMappings();
+    m_loaded = true;
+}
+
+std::pair<GamepadConfig, SystemConfig> JsonConfigManager::createDefaultConfig() {
+    GamepadConfig gamepad;
+    SystemConfig system;
 
     // Default buttons
-    m_gamepad.buttons = {
+    gamepad.buttons = {
         {0, {"z"}},
         {1, {"x"}},
         {2, {"c"}},
@@ -76,17 +73,16 @@ void JsonConfigManager::createDefaultConfig() {
     };
 
     // Default DPad
-    m_gamepad.dpad = {{"up"}, {"down"}, {"left"}, {"right"}};
+    gamepad.dpad = {{"up"}, {"down"}, {"left"}, {"right"}};
 
     // Default Left Stick
-    m_gamepad.left_stick = {{"a"}, {"d"}, {"w"}, {"s"}};
+    gamepad.left_stick = {{"a"}, {"d"}, {"w"}, {"s"}};
 
     // Default System Config
-    m_system.stick_threshold = 400;
-    m_system.log_level = "info";
+    system.stick_threshold = 400;
+    system.log_level = "info";
 
-    // Save this default configuration.
-    save(m_configPath);
+    return {gamepad, system};
 }
 
 void JsonConfigManager::compileKeyMappings() {

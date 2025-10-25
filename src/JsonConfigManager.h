@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include <nlohmann/json.hpp>
 #include <windows.h>
 #include <string>
@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <optional>
 #include <span>
+#include <utility>
 
 using json = nlohmann::json;
 
@@ -49,7 +50,7 @@ struct SystemConfig {
 // メイン設定クラス
 class JsonConfigManager {
 public:
-    JsonConfigManager();
+    explicit JsonConfigManager(std::string configPath);
     ~JsonConfigManager() = default;
     
     // 移動のみ可能
@@ -59,8 +60,8 @@ public:
     JsonConfigManager& operator=(JsonConfigManager&&) = default;
     
     // メイン API
-    bool load(const std::string& configPath = "gamepad_config.json");
-    bool save(const std::string& configPath = "gamepad_config.json") const;
+    bool load();
+    bool save() const;
     
     // クエリAPI（モダンで使いやすい）
     std::vector<WORD> getButtonKeys(int buttonIndex) const;
@@ -74,9 +75,14 @@ public:
     bool isLoaded() const { return m_loaded; }
     std::string getConfigPath() const { return m_configPath; }
 
+    // 設定のセッター
+    void setConfig(const GamepadConfig& gamepad, const SystemConfig& system);
+
+    // 静的メソッド
+    static std::pair<GamepadConfig, SystemConfig> createDefaultConfig();
+
 private:
     // 内部処理
-    void createDefaultConfig();
     void compileKeyMappings();
     std::vector<WORD> compileKeySequence(const std::vector<std::string>& keys) const;
     

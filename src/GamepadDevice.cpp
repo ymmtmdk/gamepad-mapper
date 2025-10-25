@@ -169,13 +169,15 @@ bool GamepadDevice::LoadConfiguration()
     std::string safeDeviceName = GetSafeFileName();
     m_configFilePath = "gamepad_config_" + safeDeviceName + ".json";
     
-    // Create configuration manager
-    m_configManager = std::make_unique<JsonConfigManager>();
+    // Create configuration manager with the device-specific path
+    m_configManager = std::make_unique<JsonConfigManager>(m_configFilePath);
     
-    // Try to load existing config, create default if not found
-    if (!m_configManager->load(m_configFilePath)) {
+    // Try to load existing config
+    if (!m_configManager->load()) {
+        // If loading fails, create a new default configuration file
         LOG_WRITE_W(L"Creating default configuration for device: %s", m_deviceName.c_str());
         if (!CreateConfigurationFile()) {
+            LOG_WRITE_W(L"Failed to create new configuration for device: %s", m_deviceName.c_str());
             return false;
         }
     }
@@ -189,10 +191,14 @@ bool GamepadDevice::LoadConfiguration()
 
 bool GamepadDevice::CreateConfigurationFile()
 {
-    // Create a default configuration and save it
-    // The JsonConfigManager constructor will create default config
-    // We just need to save it with our device-specific filename
-    return m_configManager->save(m_configFilePath);
+    // Get default configuration data
+    auto [gamepadConfig, systemConfig] = JsonConfigManager::createDefaultConfig();
+
+    // Set this data in the manager
+    m_configManager->setConfig(gamepadConfig, systemConfig);
+
+    // Save the new configuration to the device-specific file
+    return m_configManager->save();
 }
 
 bool GamepadDevice::AcquireDevice()
