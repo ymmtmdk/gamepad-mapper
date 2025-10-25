@@ -1,7 +1,8 @@
 {
- "name": "cmakeproject1",
- "version": "0.1.0",
- "dependencies": [
- "nlohmann-json"
- ]
+  "name": "cmakeproject1",
+  "version": "0.1.0",
+  "dependencies": [
+    "nlohmann-json",
+    "gtest"
+  ]
 }
