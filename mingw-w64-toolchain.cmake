@@ -1,5 +1,3 @@
-include("$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
-
 # このファイルはLinuxホストからWindowsをターゲットとしたクロスコンパイル用です。
 set(CMAKE_SYSTEM_NAME Windows)
 set(CMAKE_SYSTEM_PROCESSOR x86_64)
@@ -15,4 +13,5 @@ set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
 
+include("$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
 
