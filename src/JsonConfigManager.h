@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <nlohmann/json.hpp>
 #include <windows.h>
 #include <string>
@@ -74,6 +74,15 @@ public:
     // ユーティリティ
     bool isLoaded() const { return m_loaded; }
     std::string getConfigPath() const { return m_configPath; }
+    std::wstring getConfigFilePath() const { 
+        int size = MultiByteToWideChar(CP_UTF8, 0, m_configPath.c_str(), -1, nullptr, 0);
+        if (size > 0) {
+            std::wstring wpath(size - 1, L'\0');
+            MultiByteToWideChar(CP_UTF8, 0, m_configPath.c_str(), -1, &wpath[0], size);
+            return wpath;
+        }
+        return L"";
+    }
 
     // 設定のセッター
     void setConfig(const GamepadConfig& gamepad, const SystemConfig& system);

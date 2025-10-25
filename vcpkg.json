@@ -2,6 +2,8 @@
   "name": "cmakeproject1",
   "version": "0.1.0",
   "dependencies": [
-    "nlohmann-json"
+    "nlohmann-json",
+    "spdlog",
+    "fmt"
   ]
 }

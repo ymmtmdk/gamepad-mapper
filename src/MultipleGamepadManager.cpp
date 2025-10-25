@@ -162,8 +162,14 @@ void MultipleGamepadManager::ProcessAllDevices()
     }
     
     // Process input from all connected devices
-    for (auto& device : m_devices) {
+    for (size_t i = 0; i < m_devices.size(); ++i) {
+        auto& device = m_devices[i];
         if (device && device->IsConnected()) {
+            // Log which device is being processed (only occasionally to avoid spam)
+            static int logCounter = 0;
+            if (logCounter++ % 1000 == 0) {
+                LOG_WRITE_W(L"Processing device %zu: %s", i, device->GetName().c_str());
+            }
             device->ProcessInput();
         }
     }

@@ -169,22 +169,65 @@ bool GamepadDevice::LoadConfiguration()
     std::string safeDeviceName = GetSafeFileName();
     m_configFilePath = "gamepad_config_" + safeDeviceName + ".json";
     
+    LOG_WRITE_W(L"Loading configuration for device: %s", m_deviceName.c_str());
+    
+    // Convert config file path to wide string safely for logging
+    std::wstring configFilePathW;
+    int pathSize = MultiByteToWideChar(CP_UTF8, 0, m_configFilePath.c_str(), -1, nullptr, 0);
+    if (pathSize > 0) {
+        configFilePathW.resize(pathSize - 1);
+        MultiByteToWideChar(CP_UTF8, 0, m_configFilePath.c_str(), -1, &configFilePathW[0], pathSize);
+    } else {
+        configFilePathW = L"[path conversion failed]";
+    }
+    
+    LOG_WRITE_W(L"Config file path: %s", configFilePathW.c_str());
+    LOG_WRITE_W(L"Config file exists: %s", std::filesystem::exists(m_configFilePath) ? L"YES" : L"NO");
+    
     // Create configuration manager with the device-specific path
     m_configManager = std::make_unique<JsonConfigManager>(m_configFilePath);
     
     // Try to load existing config
-    if (!m_configManager->load()) {
+    bool loadResult = m_configManager->load();
+    LOG_WRITE_W(L"Config load result: %s", loadResult ? L"SUCCESS" : L"FAILED");
+    
+    if (!loadResult) {
         // If loading fails, create a new default configuration file
         LOG_WRITE_W(L"Creating default configuration for device: %s", m_deviceName.c_str());
         if (!CreateConfigurationFile()) {
             LOG_WRITE_W(L"Failed to create new configuration for device: %s", m_deviceName.c_str());
             return false;
         }
+        LOG_WRITE_W(L"Default configuration created successfully for device: %s", m_deviceName.c_str());
+    } else {
+        LOG_WRITE_W(L"Existing configuration loaded successfully for device: %s", m_deviceName.c_str());
+        
+        // Log some key configuration values to verify it's loaded correctly
+        auto button0Keys = m_configManager->getButtonKeys(0);
+        std::wstring button0Seq;
+        for (size_t i = 0; i < button0Keys.size(); ++i) {
+            if (i > 0) button0Seq += L"+";
+            wchar_t buf[16];
+            swprintf_s(buf, L"0x%02X", button0Keys[i]);
+            button0Seq += buf;
+        }
+        LOG_WRITE_W(L"Button0 mapping: [%s] (threshold: %d)", 
+                   button0Seq.c_str(), m_configManager->getStickThreshold());
+    }
+    
+    // Convert config file path to wide string safely
+    std::wstring finalConfigFilePathW;
+    int finalSize = MultiByteToWideChar(CP_UTF8, 0, m_configFilePath.c_str(), -1, nullptr, 0);
+    if (finalSize > 0) {
+        finalConfigFilePathW.resize(finalSize - 1);
+        MultiByteToWideChar(CP_UTF8, 0, m_configFilePath.c_str(), -1, &finalConfigFilePathW[0], finalSize);
+    } else {
+        finalConfigFilePathW = L"[conversion failed]";
     }
     
     LOG_WRITE_W(L"Configuration loaded for device: %s (file: %s)", 
                m_deviceName.c_str(), 
-               std::filesystem::path(m_configFilePath).filename().string().c_str());
+               finalConfigFilePathW.c_str());
     
     return true;
 }
@@ -307,7 +350,7 @@ void GamepadDevice::ProcessInput()
         // Log the current state for this device
         Logger::GetInstance().AppendState(m_currentState);
         
-        // Process the input
+        // Process the input with device context
         m_inputProcessor->ProcessGamepadInput(m_currentState);
     }
 }

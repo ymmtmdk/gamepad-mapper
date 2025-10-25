@@ -133,11 +133,28 @@ void InputProcessor::ProcessButtons(const DIJOYSTATE2& js)
 void InputProcessor::ProcessButtonInternal(size_t buttonIndex, bool pressed)
 {
     const auto& vks = m_configManager->getButtonKeys(static_cast<int>(buttonIndex));
-    SendVirtualKeySequence(vks, pressed);
     
-    // Log the button event
-    LOG_WRITE_W(L"Button%zu -> VKseq %s", buttonIndex, pressed ? L"PRESSED" : L"RELEASED");
-    FRAME_LOG_APPEND(L"Button%zu -> VKseq %s", buttonIndex, pressed ? L"PRESSED" : L"RELEASED");
+    // Log detailed button event with configuration info
+    std::wstring vkSeq;
+    for (size_t i = 0; i < vks.size(); ++i) {
+        if (i > 0) vkSeq += L"+";
+        wchar_t buf[16];
+        swprintf_s(buf, L"0x%02X", vks[i]);
+        vkSeq += buf;
+    }
+    
+    LOG_WRITE_W(L"Button%zu -> Keys[%s] %s (Config: %s)", 
+               buttonIndex, 
+               vkSeq.c_str(), 
+               pressed ? L"PRESSED" : L"RELEASED",
+               m_configManager->getConfigFilePath().c_str());
+    
+    FRAME_LOG_APPEND(L"Button%zu -> Keys[%s] %s", 
+                    buttonIndex, 
+                    vkSeq.c_str(), 
+                    pressed ? L"PRESSED" : L"RELEASED");
+    
+    SendVirtualKeySequence(vks, pressed);
 }
 
 void InputProcessor::ProcessPOV(const DIJOYSTATE2& js)
@@ -187,12 +204,28 @@ void InputProcessor::ProcessPOVDirection(size_t direction, bool active)
 
     const auto& vks = m_configManager->getDpadKeys(dirStr);
     if (!vks.empty()) {
-        SendVirtualKeySequence(vks, active);
+        // Log detailed POV event with configuration info
+        std::wstring vkSeq;
+        for (size_t i = 0; i < vks.size(); ++i) {
+            if (i > 0) vkSeq += L"+";
+            wchar_t buf[16];
+            swprintf_s(buf, L"0x%02X", vks[i]);
+            vkSeq += buf;
+        }
+        
         const wchar_t* dirName = (direction == AX_UP) ? L"Up" : 
                                 (direction == AX_DOWN) ? L"Down" :
                                 (direction == AX_LEFT) ? L"Left" : L"Right";
-        LOG_WRITE_W(L"POV %s -> VKseq %s", dirName, active ? L"ON" : L"OFF");
-        FRAME_LOG_APPEND(L"POV %s -> VKseq %s", dirName, active ? L"ON" : L"OFF");
+        
+        LOG_WRITE_W(L"POV %s -> Keys[%s] %s (Config: %s)", 
+                   dirName, 
+                   vkSeq.c_str(), 
+                   active ? L"ON" : L"OFF",
+                   m_configManager->getConfigFilePath().c_str());
+        
+        FRAME_LOG_APPEND(L"POV %s -> Keys[%s] %s", dirName, vkSeq.c_str(), active ? L"ON" : L"OFF");
+        
+        SendVirtualKeySequence(vks, active);
     }
 }
 
@@ -237,12 +270,28 @@ void InputProcessor::ProcessAxisDirection(size_t direction, bool active)
 
     const auto& vks = m_configManager->getStickKeys(dirStr);
     if (!vks.empty()) {
-        SendVirtualKeySequence(vks, active);
+        // Log detailed axis event with configuration info
+        std::wstring vkSeq;
+        for (size_t i = 0; i < vks.size(); ++i) {
+            if (i > 0) vkSeq += L"+";
+            wchar_t buf[16];
+            swprintf_s(buf, L"0x%02X", vks[i]);
+            vkSeq += buf;
+        }
+        
         const wchar_t* dirName = (direction == AX_UP) ? L"Up" : 
                                 (direction == AX_DOWN) ? L"Down" :
                                 (direction == AX_LEFT) ? L"Left" : L"Right";
-        LOG_WRITE_W(L"Axis %s -> VKseq %s", dirName, active ? L"ON" : L"OFF");
-        FRAME_LOG_APPEND(L"Axis %s -> VKseq %s", dirName, active ? L"ON" : L"OFF");
+        
+        LOG_WRITE_W(L"Axis %s -> Keys[%s] %s (Config: %s)", 
+                   dirName, 
+                   vkSeq.c_str(), 
+                   active ? L"ON" : L"OFF",
+                   m_configManager->getConfigFilePath().c_str());
+        
+        FRAME_LOG_APPEND(L"Axis %s -> Keys[%s] %s", dirName, vkSeq.c_str(), active ? L"ON" : L"OFF");
+        
+        SendVirtualKeySequence(vks, active);
     }
 }
 

@@ -13,6 +13,9 @@ JsonConfigManager::JsonConfigManager(std::string configPath)
 bool JsonConfigManager::load() {
     std::ifstream configFile(m_configPath);
     if (!configFile.is_open()) {
+        // ログに詳細な情報を出力
+        std::string msg = "Config file cannot be opened: " + m_configPath;
+        OutputDebugStringA(msg.c_str());
         return false; // File doesn't exist or cannot be opened
     }
 
@@ -20,14 +23,25 @@ bool JsonConfigManager::load() {
         json j;
         configFile >> j;
 
+        // JSON構造をログに出力
+        std::string jsonStr = j.dump();
+        std::string logMsg = "JSON loaded: " + jsonStr.substr(0, 200) + "...";
+        OutputDebugStringA(logMsg.c_str());
+
         m_gamepad = j.at("gamepad").get<GamepadConfig>();
         m_system = j.at("config").get<SystemConfig>();
 
+        // 読み込んだ設定をログに出力
+        std::string configMsg = "Config loaded - Buttons: " + std::to_string(m_gamepad.buttons.size()) + 
+                               ", Threshold: " + std::to_string(m_system.stick_threshold);
+        OutputDebugStringA(configMsg.c_str());
+
         compileKeyMappings();
         m_loaded = true;
-    } catch (json::exception&) {
-        // Failed to parse JSON
-        // Consider logging the error e.what()
+    } catch (const json::exception& e) {
+        // Failed to parse JSON - 詳細なエラー情報をログに出力
+        std::string errorMsg = "JSON parse error: " + std::string(e.what()) + " (file: " + m_configPath + ")";
+        OutputDebugStringA(errorMsg.c_str());
         return false;
     }
 
