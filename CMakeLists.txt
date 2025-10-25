@@ -31,6 +31,7 @@ add_executable (GamepadMapper WIN32
 
 # nlohmann_json を検索。vcpkg を利用している場合は vcpkg の toolchain を指定して CMake を呼んでください
 find_package(nlohmann_json CONFIG QUIET)
+find_package(gtest CONFIG QUIET)
 
 # Unicodeを有効にする
 add_compile_definitions(UNICODE _UNICODE)
