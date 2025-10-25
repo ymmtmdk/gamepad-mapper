@@ -29,23 +29,6 @@ GamepadMapper/
 └── gamepad_config_*.json          # デバイス固有設定ファイル
 ```
 
-### アーキテクチャの改善
-
-**旧システム (単一デバイス)**:
-```
-Application → DirectInputManager (1デバイス)
-           → JsonConfigManager (1設定)
-           → InputProcessor (1処理)
-```
-
-**新システム (複数デバイス)**:
-```
-Application → MultipleGamepadManager
-           ├── GamepadDevice[0] → JsonConfigManager[0] → InputProcessor[0]
-           ├── GamepadDevice[1] → JsonConfigManager[1] → InputProcessor[1]
-           └── GamepadDevice[n] → JsonConfigManager[n] → InputProcessor[n]
-```
-
 ## ⚙️ 設定ファイルシステム
 
 ### ファイル命名規則
@@ -135,53 +118,11 @@ gamepad_config_{device_name}.json
 ### ビルド手順
 
 ```bash
-# ビルドスクリプトを使用（推奨）
 bash build.sh
-
-# または手動ビルド
-mkdir build
-cd build
-cmake .. -DCMAKE_TOOLCHAIN_FILE=../mingw-w64-toolchain.cmake
-make GamepadMapper
 ```
 
 ### 実行ファイル
 ビルド成功後、`GamepadMapper.exe` が生成されます。
-
-## 🚀 使用方法
-
-### 基本的な使用手順
-
-1. **アプリケーション起動**
-   ```bash
-   ./GamepadMapper.exe
-   ```
-
-2. **ゲームパッド接続**
-   - USB/Bluetooth経由でゲームパッドを接続
-   - アプリケーションが自動的にデバイスを検出
-   - 各デバイス用の設定ファイルが自動生成
-
-3. **設定カスタマイズ**
-   - 生成された `gamepad_config_{device_name}.json` を編集
-   - ボタンやスティックのキーマッピングを変更
-   - アプリケーションを再起動して設定を反映
-
-4. **複数デバイス使用**
-   - 複数のゲームパッドを同時接続
-   - 各デバイスが独立した設定で動作
-   - リアルタイムでの接続/切断対応
-
-### ログ出力例
-
-```
-Gamepad Status: 2/2 devices connected
-  • Connected: Xbox Controller
-  • Connected: PS4 Controller
-[Xbox Controller] Button0 -> z PRESSED
-[PS4 Controller] Button1 -> x PRESSED
-[Xbox Controller] Button0 -> z RELEASED
-```
 
 ## 📋 技術詳細
 
@@ -211,36 +152,3 @@ Gamepad Status: 2/2 devices connected
 - **自動再接続**: 切断されたデバイスの再接続を試行
 - **デバイス状態監視**: リアルタイムでの接続状態表示
 
-### パフォーマンス最適化
-
-- **効率的なデバイススキャン**: 5秒間隔での新デバイス検出
-- **状態変化検出**: 前フレームとの比較による最適化
-- **メモリ管理**: RAII パターンによる安全なリソース管理
-
-## 🔧 トラブルシューティング
-
-### よくある問題
-
-1. **デバイスが認識されない**
-   - Windowsのデバイスマネージャーでゲームパッドが認識されているか確認
-   - アプリケーション再起動でデバイススキャンを再実行
-
-2. **設定が反映されない**
-   - 設定ファイルのJSON形式が正しいか確認
-   - アプリケーション再起動が必要
-
-3. **複数デバイスで競合する**
-   - 各デバイスの設定ファイルで異なるキーマッピングを設定
-   - ログでどのデバイスからの入力かを確認
-
-### ログファイル
-
-詳細な動作ログは `multi_gamepad_mapper.log` に出力されます。
-
-## 📝 ライセンス
-
-このプロジェクトはオープンソースソフトウェアです。
-
-## 🤝 貢献
-
-バグ報告や機能要望は、プロジェクトのIssueトラッカーまでお願いします。
