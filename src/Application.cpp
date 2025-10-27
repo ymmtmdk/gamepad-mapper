@@ -2,7 +2,6 @@
 #include "WindowManager.h"
 #include "MultipleGamepadManager.h"
 #include "GamepadDevice.h"
-#include "Logger.h"
 #include "ModernLogger.h"
 #include "DisplayBuffer.h"
 #include <memory>

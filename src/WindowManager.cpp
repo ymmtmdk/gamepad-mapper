@@ -1,5 +1,4 @@
 #include "WindowManager.h"
-#include "Logger.h"
 #include "ModernLogger.h"
 #include "DisplayBuffer.h"
 #include "resource.h"

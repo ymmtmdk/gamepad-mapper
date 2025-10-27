@@ -1,7 +1,6 @@
 #include "GamepadDevice.h"
 #include "JsonConfigManager.h"
 #include "InputProcessor.h"
-#include "Logger.h"
 #include "ModernLogger.h"
 #include "IDisplayBuffer.h"
 #include <algorithm>
@@ -47,7 +46,7 @@ bool GamepadDevice::Initialize(IDirectInput8* pDirectInput, const DIDEVICEINSTAN
     
     // Load configuration
     if (!LoadConfiguration()) {
-        LOG_WRITE_W(L"Failed to load configuration for device: %s", m_deviceName.c_str());
+        LOG_ERROR_W(L"Failed to load configuration for device: " + m_deviceName);
         return false;
     }
     
@@ -56,14 +55,13 @@ bool GamepadDevice::Initialize(IDirectInput8* pDirectInput, const DIDEVICEINSTAN
     
     // Try to acquire device
     if (!AcquireDevice()) {
-        LOG_WRITE_W(L"Initial device acquisition failed for: %s (may work in background)", m_deviceName.c_str());
+        LOG_WARN_W(L"Initial device acquisition failed for: " + m_deviceName + L" (may work in background)");
     }
     
     m_initialized = true;
     m_connected = true;
     
-    LOG_WRITE_W(L"GamepadDevice initialized successfully: %s (%s)", 
-               m_deviceName.c_str(), m_deviceInstanceName.c_str());
+    LOG_INFO_W(L"GamepadDevice initialized successfully: " + m_deviceName + L" (" + m_deviceInstanceName + L")");
     
     return true;
 }
@@ -74,7 +72,7 @@ void GamepadDevice::Shutdown()
         return;
     }
     
-    LOG_WRITE_W(L"Shutting down GamepadDevice: %s", m_deviceName.c_str());
+    LOG_INFO_W(L"Shutting down GamepadDevice: " + m_deviceName);
     
     UnacquireDevice();
     
@@ -88,7 +86,7 @@ void GamepadDevice::Shutdown()
     m_acquired = false;
     m_initialized = false;
     
-    LOG_WRITE_W(L"GamepadDevice shutdown complete: %s", m_deviceName.c_str());
+    LOG_INFO_W(L"GamepadDevice shutdown complete: " + m_deviceName);
 }
 
 bool GamepadDevice::ConfigureDevice(HWND hWnd)
@@ -100,14 +98,14 @@ bool GamepadDevice::ConfigureDevice(HWND hWnd)
     // Set data format to joystick (DIJOYSTATE2)
     HRESULT hr = m_device->SetDataFormat(&c_dfDIJoystick2);
     if (FAILED(hr)) {
-        LOG_WRITE("SetDataFormat failed. HRESULT: 0x%08X", hr);
+        LOG_ERROR("SetDataFormat failed. HRESULT: 0x{:08X}", hr);
         return false;
     }
     
     // Set cooperative level
     hr = m_device->SetCooperativeLevel(hWnd, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE);
     if (FAILED(hr)) {
-        LOG_WRITE("SetCooperativeLevel failed. HRESULT: 0x%08X", hr);
+        LOG_ERROR("SetCooperativeLevel failed. HRESULT: 0x{:08X}", hr);
         return false;
     }
     
@@ -136,7 +134,7 @@ void GamepadDevice::SetAxisRanges()
         m_device->SetProperty(DIPROP_RANGE, &range.diph);
     }
     
-    LOG_WRITE_W(L"Axis ranges set to [-1000, 1000] for device: %s", m_deviceName.c_str());
+    LOG_DEBUG_W(L"Axis ranges set to [-1000, 1000] for device: " + m_deviceName);
 }
 
 std::string GamepadDevice::GetSafeFileName() const
@@ -171,7 +169,7 @@ bool GamepadDevice::LoadConfiguration()
     std::string safeDeviceName = GetSafeFileName();
     m_configFilePath = "gamepad_config_" + safeDeviceName + ".json";
     
-    LOG_WRITE_W(L"Loading configuration for device: %s", m_deviceName.c_str());
+    LOG_DEBUG_W(L"Loading configuration for device: " + m_deviceName);
     
     // Convert config file path to wide string safely for logging
     std::wstring configFilePathW;
@@ -183,26 +181,26 @@ bool GamepadDevice::LoadConfiguration()
         configFilePathW = L"[path conversion failed]";
     }
     
-    LOG_WRITE_W(L"Config file path: %s", configFilePathW.c_str());
-    LOG_WRITE_W(L"Config file exists: %s", std::filesystem::exists(m_configFilePath) ? L"YES" : L"NO");
+    LOG_DEBUG_W(L"Config file path: " + configFilePathW);
+    LOG_DEBUG_W(L"Config file exists: " + std::wstring(std::filesystem::exists(m_configFilePath) ? L"YES" : L"NO"));
     
     // Create configuration manager with the device-specific path
     m_configManager = std::make_unique<JsonConfigManager>(m_configFilePath);
     
     // Try to load existing config
     bool loadResult = m_configManager->load();
-    LOG_WRITE_W(L"Config load result: %s", loadResult ? L"SUCCESS" : L"FAILED");
+    LOG_DEBUG_W(L"Config load result: " + std::wstring(loadResult ? L"SUCCESS" : L"FAILED"));
     
     if (!loadResult) {
         // If loading fails, create a new default configuration file
-        LOG_WRITE_W(L"Creating default configuration for device: %s", m_deviceName.c_str());
+        LOG_INFO_W(L"Creating default configuration for device: " + m_deviceName);
         if (!CreateConfigurationFile()) {
-            LOG_WRITE_W(L"Failed to create new configuration for device: %s", m_deviceName.c_str());
+            LOG_ERROR_W(L"Failed to create new configuration for device: " + m_deviceName);
             return false;
         }
-        LOG_WRITE_W(L"Default configuration created successfully for device: %s", m_deviceName.c_str());
+        LOG_INFO_W(L"Default configuration created successfully for device: " + m_deviceName);
     } else {
-        LOG_WRITE_W(L"Existing configuration loaded successfully for device: %s", m_deviceName.c_str());
+        LOG_INFO_W(L"Existing configuration loaded successfully for device: " + m_deviceName);
         
         // Log some key configuration values to verify it's loaded correctly
         auto button0Keys = m_configManager->getButtonKeys(0);
@@ -213,8 +211,7 @@ bool GamepadDevice::LoadConfiguration()
             swprintf_s(buf, L"0x%02X", button0Keys[i]);
             button0Seq += buf;
         }
-        LOG_WRITE_W(L"Button0 mapping: [%s] (threshold: %d)", 
-                   button0Seq.c_str(), m_configManager->getStickThreshold());
+        LOG_DEBUG_W(L"Button0 mapping: [" + std::wstring(button0Seq.begin(), button0Seq.end()) + L"] (threshold: " + std::to_wstring(m_configManager->getStickThreshold()) + L")");
     }
     
     // Convert config file path to wide string safely
@@ -227,9 +224,7 @@ bool GamepadDevice::LoadConfiguration()
         finalConfigFilePathW = L"[conversion failed]";
     }
     
-    LOG_WRITE_W(L"Configuration loaded for device: %s (file: %s)", 
-               m_deviceName.c_str(), 
-               finalConfigFilePathW.c_str());
+    LOG_INFO_W(L"Configuration loaded for device: " + m_deviceName + L" (file: " + finalConfigFilePathW + L")");
     
     return true;
 }
@@ -255,11 +250,11 @@ bool GamepadDevice::AcquireDevice()
     HRESULT hr = m_device->Acquire();
     if (SUCCEEDED(hr)) {
         m_acquired = true;
-        LOG_WRITE_W(L"Device acquired successfully: %s", m_deviceName.c_str());
+        LOG_DEBUG_W(L"Device acquired successfully: " + m_deviceName);
         return true;
     } else {
         m_acquired = false;
-        LOG_WRITE_W(L"Device acquisition failed: %s. HRESULT: 0x%08X", m_deviceName.c_str(), hr);
+        LOG_WARN_W(L"Device acquisition failed: " + m_deviceName + L". HRESULT: 0x" + std::to_wstring(hr));
         return false;
     }
 }
@@ -269,7 +264,7 @@ void GamepadDevice::UnacquireDevice()
     if (m_device && m_acquired) {
         m_device->Unacquire();
         m_acquired = false;
-        LOG_WRITE_W(L"Device unacquired: %s", m_deviceName.c_str());
+        LOG_DEBUG_W(L"Device unacquired: " + m_deviceName);
     }
 }
 
@@ -285,7 +280,7 @@ bool GamepadDevice::PollAndGetState()
         hr = m_device->Acquire();
         if (FAILED(hr)) {
             if (hr == DIERR_INPUTLOST || hr == DIERR_NOTACQUIRED) {
-                LOG_WRITE_W(L"Device lost or not acquired: %s. Trying to reconnect.", m_deviceName.c_str());
+                LOG_WARN_W(L"Device lost or not acquired: " + m_deviceName + L". Trying to reconnect.");
                 m_connected = false;
             }
             return false;
@@ -294,9 +289,9 @@ bool GamepadDevice::PollAndGetState()
     
     hr = m_device->GetDeviceState(sizeof(DIJOYSTATE2), &m_currentState);
     if (FAILED(hr)) {
-        LOG_WRITE_W(L"GetDeviceState failed for device: %s. HRESULT: 0x%08X", m_deviceName.c_str(), hr);
+        LOG_ERROR_W(L"GetDeviceState failed for device: " + m_deviceName + L". HRESULT: 0x" + std::to_wstring(hr));
         if (hr == DIERR_INPUTLOST || hr == DIERR_NOTACQUIRED || hr == DIERR_UNPLUGGED) {
-            LOG_WRITE_W(L"Device is unplugged or lost: %s", m_deviceName.c_str());
+            LOG_WARN_W(L"Device is unplugged or lost: " + m_deviceName);
             m_connected = false;
             UnacquireDevice();
         }
@@ -312,18 +307,18 @@ bool GamepadDevice::TryToReconnect(IDirectInput8* pDirectInput, HWND hWnd)
         return m_connected;
     }
     
-    LOG_WRITE_W(L"Attempting to reconnect device: %s", m_deviceName.c_str());
+    LOG_INFO_W(L"Attempting to reconnect device: " + m_deviceName);
     
     // Try to recreate the device
     HRESULT hr = pDirectInput->CreateDevice(m_deviceGUID, m_device.GetAddressOf(), nullptr);
     if (FAILED(hr)) {
-        LOG_WRITE_W(L"Failed to recreate device: %s. HRESULT: 0x%08X", m_deviceName.c_str(), hr);
+        LOG_ERROR_W(L"Failed to recreate device: " + m_deviceName + L". HRESULT: 0x" + std::to_wstring(hr));
         return false;
     }
     
     // Reconfigure device
     if (!ConfigureDevice(hWnd)) {
-        LOG_WRITE_W(L"Failed to reconfigure device: %s", m_deviceName.c_str());
+        LOG_ERROR_W(L"Failed to reconfigure device: " + m_deviceName);
         m_device.Reset();
         return false;
     }
@@ -331,10 +326,10 @@ bool GamepadDevice::TryToReconnect(IDirectInput8* pDirectInput, HWND hWnd)
     // Try to acquire
     if (AcquireDevice()) {
         m_connected = true;
-        LOG_WRITE_W(L"Device reconnected successfully: %s", m_deviceName.c_str());
+        LOG_INFO_W(L"Device reconnected successfully: " + m_deviceName);
         return true;
     } else {
-        LOG_WRITE_W(L"Failed to acquire reconnected device: %s", m_deviceName.c_str());
+        LOG_WARN_W(L"Failed to acquire reconnected device: " + m_deviceName);
         return false;
     }
 }

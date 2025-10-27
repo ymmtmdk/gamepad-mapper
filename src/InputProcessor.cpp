@@ -1,6 +1,6 @@
 ﻿#include "InputProcessor.h"
 #include "JsonConfigManager.h"
-#include "Logger.h"
+#include "ModernLogger.h"
 #include <cstring>
 #include <algorithm>
 
@@ -55,7 +55,7 @@ void InputProcessor::SendVirtualKeySequence(const std::vector<WORD>& vks, bool d
         if (i) seq += L"+";
         seq += buf;
     }
-    FRAME_LOG_APPEND(L"SendInputSeq: %s %s", seq.c_str(), down ? L"DOWN" : L"UP");
+    ModernLogger::GetInstance().AppendFrameLog(L"SendInputSeq: %s %s", seq.c_str(), down ? L"DOWN" : L"UP");
 }
 
 void InputProcessor::SendVirtualKey(WORD vk, bool down)
@@ -143,13 +143,16 @@ void InputProcessor::ProcessButtonInternal(size_t buttonIndex, bool pressed)
         vkSeq += buf;
     }
     
-    LOG_WRITE_W(L"Button%zu -> Keys[%s] %s (Config: %s)", 
-               buttonIndex, 
-               vkSeq.c_str(), 
-               pressed ? L"PRESSED" : L"RELEASED",
-               m_configManager->getConfigFilePath().c_str());
+    std::wstring configPath;
+    try {
+        configPath = m_configManager->getConfigFilePath();
+    } catch (...) {
+        configPath = L"[config path error]";
+    }
+    LOG_DEBUG_W(L"Button" + std::to_wstring(buttonIndex) + L" -> Keys[" + vkSeq + L"] " + 
+               (pressed ? L"PRESSED" : L"RELEASED") + L" (Config: " + configPath + L")");
     
-    FRAME_LOG_APPEND(L"Button%zu -> Keys[%s] %s", 
+    ModernLogger::GetInstance().AppendFrameLog(L"Button%zu -> Keys[%s] %s", 
                     buttonIndex, 
                     vkSeq.c_str(), 
                     pressed ? L"PRESSED" : L"RELEASED");
@@ -217,13 +220,16 @@ void InputProcessor::ProcessPOVDirection(size_t direction, bool active)
                                 (direction == AX_DOWN) ? L"Down" :
                                 (direction == AX_LEFT) ? L"Left" : L"Right";
         
-        LOG_WRITE_W(L"POV %s -> Keys[%s] %s (Config: %s)", 
-                   dirName, 
-                   vkSeq.c_str(), 
-                   active ? L"ON" : L"OFF",
-                   m_configManager->getConfigFilePath().c_str());
+        std::wstring configPath;
+        try {
+            configPath = m_configManager->getConfigFilePath();
+        } catch (...) {
+            configPath = L"[config path error]";
+        }
+        LOG_DEBUG_W(L"POV " + std::wstring(dirName) + L" -> Keys[" + vkSeq + L"] " + 
+                   (active ? L"ON" : L"OFF") + L" (Config: " + configPath + L")");
         
-        FRAME_LOG_APPEND(L"POV %s -> Keys[%s] %s", dirName, vkSeq.c_str(), active ? L"ON" : L"OFF");
+        ModernLogger::GetInstance().AppendFrameLog(L"POV %s -> Keys[%s] %s", dirName, vkSeq.c_str(), active ? L"ON" : L"OFF");
         
         SendVirtualKeySequence(vks, active);
     }
@@ -283,13 +289,16 @@ void InputProcessor::ProcessAxisDirection(size_t direction, bool active)
                                 (direction == AX_DOWN) ? L"Down" :
                                 (direction == AX_LEFT) ? L"Left" : L"Right";
         
-        LOG_WRITE_W(L"Axis %s -> Keys[%s] %s (Config: %s)", 
-                   dirName, 
-                   vkSeq.c_str(), 
-                   active ? L"ON" : L"OFF",
-                   m_configManager->getConfigFilePath().c_str());
+        std::wstring configPath;
+        try {
+            configPath = m_configManager->getConfigFilePath();
+        } catch (...) {
+            configPath = L"[config path error]";
+        }
+        LOG_DEBUG_W(L"Axis " + std::wstring(dirName) + L" -> Keys[" + vkSeq + L"] " + 
+                   (active ? L"ON" : L"OFF") + L" (Config: " + configPath + L")");
         
-        FRAME_LOG_APPEND(L"Axis %s -> Keys[%s] %s", dirName, vkSeq.c_str(), active ? L"ON" : L"OFF");
+        ModernLogger::GetInstance().AppendFrameLog(L"Axis %s -> Keys[%s] %s", dirName, vkSeq.c_str(), active ? L"ON" : L"OFF");
         
         SendVirtualKeySequence(vks, active);
     }
