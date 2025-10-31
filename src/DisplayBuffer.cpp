@@ -9,8 +9,6 @@
 DisplayBuffer::DisplayBuffer(size_t maxLines)
     : m_maxLines(std::clamp(maxLines, MIN_MAX_LINES, MAX_MAX_LINES))
     , m_totalLinesAdded(0)
-    , m_timestampEnabled(false)
-    , m_autoSeparatorEnabled(true)
 {
     m_lines.reserve(m_maxLines + 10); // Reserve some extra space
 }
@@ -49,7 +47,7 @@ void DisplayBuffer::AddFormattedLine(const wchar_t* fmt, ...) {
 void DisplayBuffer::AddGamepadHeader(const std::wstring& deviceName) {
     std::lock_guard<std::mutex> lock(m_mutex);
     
-    if (m_autoSeparatorEnabled && !m_lines.empty()) {
+    if (!m_lines.empty()) {
         AddLineInternal(L"");
     }
     
@@ -62,7 +60,7 @@ void DisplayBuffer::AddGamepadInfo(bool connected,
                                   const std::wstring& instanceName) {
     std::lock_guard<std::mutex> lock(m_mutex);
     
-    if (m_autoSeparatorEnabled && !m_lines.empty()) {
+    if (!m_lines.empty()) {
         AddLineInternal(L"");
     }
     
@@ -76,9 +74,6 @@ void DisplayBuffer::AddGamepadInfo(bool connected,
         AddLineInternal(L"status: not connected");
     }
     
-    if (m_autoSeparatorEnabled) {
-        AddLineInternal(L"");
-    }
 }
 
 void DisplayBuffer::AddGamepadState(const std::wstring& deviceName, 
@@ -153,23 +148,9 @@ void DisplayBuffer::ResetStatistics() {
     m_totalLinesAdded = 0;
 }
 
-void DisplayBuffer::SetAutoSeparator(bool enabled) {
-    std::lock_guard<std::mutex> lock(m_mutex);
-    m_autoSeparatorEnabled = enabled;
-}
-
-bool DisplayBuffer::IsAutoSeparatorEnabled() const {
-    std::lock_guard<std::mutex> lock(m_mutex);
-    return m_autoSeparatorEnabled;
-}
-
 // Private helper methods
 void DisplayBuffer::AddLineInternal(const std::wstring& line) {
     std::wstring finalLine = line;
-    
-    if (m_timestampEnabled) {
-        finalLine = GetTimestamp() + L" " + line;
-    }
     
     m_lines.push_back(finalLine);
     m_totalLinesAdded++;
@@ -214,15 +195,4 @@ std::wstring DisplayBuffer::FormatButtonState(const DIJOYSTATE2& state) {
     }
     
     return result;
-}
-
-std::wstring DisplayBuffer::GetTimestamp() {
-    SYSTEMTIME st;
-    GetLocalTime(&st);
-    
-    wchar_t timestamp[32];
-    swprintf_s(timestamp, L"[%02d:%02d:%02d.%03d]", 
-               st.wHour, st.wMinute, st.wSecond, st.wMilliseconds);
-    
-    return timestamp;
 }

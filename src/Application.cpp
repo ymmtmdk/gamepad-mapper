@@ -65,7 +65,6 @@ bool Application::InitializeLogger()
 
     // Initialize display buffer for screen output
     m_displayBuffer = std::make_unique<DisplayBuffer>(150); // Allow more lines for better debugging
-    m_displayBuffer->SetAutoSeparator(true);
     return true;
 }
 

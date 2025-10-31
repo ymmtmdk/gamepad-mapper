@@ -40,9 +40,6 @@ public:
     size_t GetTotalLinesAdded() const;
     void ResetStatistics();
 
-    void SetAutoSeparator(bool enabled);
-    bool IsAutoSeparatorEnabled() const;
-
 private:
     // Copy operations disabled
     DisplayBuffer(const DisplayBuffer&) = delete;
@@ -53,14 +50,11 @@ private:
     void TrimToMaxLines();
     std::wstring FormatGamepadState(const DIJOYSTATE2& state);
     std::wstring FormatButtonState(const DIJOYSTATE2& state);
-    std::wstring GetTimestamp();
 
     // Member variables
     std::vector<std::wstring> m_lines;
     size_t m_maxLines;
     size_t m_totalLinesAdded;
-    bool m_timestampEnabled;
-    bool m_autoSeparatorEnabled;
     mutable std::mutex m_mutex;
 
     // Constants for formatting
