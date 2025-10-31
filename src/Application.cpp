@@ -138,7 +138,7 @@ void Application::ProcessMessages()
 
 void Application::UpdateFrame()
 {
-    // Clear frame log for this frame
+    // Clear display buffer for this frame
     m_displayBuffer->Clear();
     
     // Display gamepad information at the top

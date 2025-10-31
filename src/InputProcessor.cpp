@@ -69,9 +69,6 @@ void InputProcessor::SendVirtualKeySequence(const std::vector<WORD>& vks, bool d
     // Display input sequence information
     if (m_displayBuffer) {
         m_displayBuffer->AddFormattedLine(L"SendInputSeq: %s %s", seq.c_str(), down ? L"DOWN" : L"UP");
-    } else {
-        // DEPRECATED: Fallback to logger for compatibility
-        Logger::GetInstance().AppendFrameLog(L"SendInputSeq: %s %s", seq.c_str(), down ? L"DOWN" : L"UP");
     }
 }
 
@@ -175,12 +172,6 @@ void InputProcessor::ProcessButtonInternal(size_t buttonIndex, bool pressed)
                         buttonIndex, 
                         vkSeq.c_str(), 
                         pressed ? L"PRESSED" : L"RELEASED");
-    } else {
-        // DEPRECATED: Fallback to logger for compatibility
-        Logger::GetInstance().AppendFrameLog(L"Button%zu -> Keys[%s] %s", 
-                        buttonIndex, 
-                        vkSeq.c_str(), 
-                        pressed ? L"PRESSED" : L"RELEASED");
     }
     
     SendVirtualKeySequence(vks, pressed);
@@ -258,9 +249,6 @@ void InputProcessor::ProcessPOVDirection(size_t direction, bool active)
         // Display POV event information
         if (m_displayBuffer) {
             m_displayBuffer->AddFormattedLine(L"POV %s -> Keys[%s] %s", dirName, vkSeq.c_str(), active ? L"ON" : L"OFF");
-        } else {
-            // DEPRECATED: Fallback to logger for compatibility
-            Logger::GetInstance().AppendFrameLog(L"POV %s -> Keys[%s] %s", dirName, vkSeq.c_str(), active ? L"ON" : L"OFF");
         }
         
         SendVirtualKeySequence(vks, active);
@@ -333,9 +321,6 @@ void InputProcessor::ProcessAxisDirection(size_t direction, bool active)
         // Display axis event information
         if (m_displayBuffer) {
             m_displayBuffer->AddFormattedLine(L"Axis %s -> Keys[%s] %s", dirName, vkSeq.c_str(), active ? L"ON" : L"OFF");
-        } else {
-            // DEPRECATED: Fallback to logger for compatibility
-            Logger::GetInstance().AppendFrameLog(L"Axis %s -> Keys[%s] %s", dirName, vkSeq.c_str(), active ? L"ON" : L"OFF");
         }
         
         SendVirtualKeySequence(vks, active);

@@ -341,14 +341,9 @@ void GamepadDevice::ProcessInput()
     }
     
     if (PollAndGetState()) {
-        // Add device state to display buffer if available
+        // Add device state to display buffer
         if (m_displayBuffer) {
             m_displayBuffer->AddGamepadState(m_deviceName, m_currentState);
-        } else {
-            // DEPRECATED: Fallback to old logger for compatibility - prefer DisplayBuffer
-            // TODO: Remove this fallback once all components use DisplayBuffer
-            Logger::GetInstance().AppendFrameLog(L"[%s]", m_deviceName.c_str());
-            Logger::GetInstance().AppendState(m_currentState);
         }
         
         // Process the input with device context
