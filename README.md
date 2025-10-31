@@ -192,12 +192,8 @@ Application
 - [トラブルシューティング](docs/TROUBLESHOOTING.md) - よくある問題の解決法
 
 ### 📖 詳細版ドキュメント（必要時のみ）
-- [API リファレンス（詳細版）](docs/API_REFERENCE_ORIGINAL.md) - 全API詳細説明
-- [開発者ガイド（詳細版）](docs/DEVELOPER_GUIDE_ORIGINAL.md) - 理論的背景・高度な開発情報
-- [トラブルシューティング（詳細版）](docs/TROUBLESHOOTING_ORIGINAL.md) - 網羅的問題解決ガイド
+*注意: 詳細版ドキュメントは簡略化作業中にバックアップとして保存されています。必要に応じて内部資料から復元可能です。*
 
-### 📊 プロジェクト分析資料
-- [ドキュメント実装分析](docs/DOCUMENT_IMPLEMENTATION_ANALYSIS.md) - 整合性分析結果
-- [ドキュメント簡略化レポート](docs/DOCUMENTATION_SIMPLIFICATION_REPORT.md) - 改善作業レポート
+### 📊 プロジェクト管理資料
 - [設定ガイド](docs/CONFIGURATION_GUIDE.md) - 詳細な設定方法・カスタマイズガイド
-- [設定ファイル作成レポート](docs/CONFIGURATION_FILES_CREATION_REPORT.md) - 設定ファイル整備結果
+- [内部資料一覧](docs/README.md) - プロジェクト分析・作業レポート（管理者向け）
