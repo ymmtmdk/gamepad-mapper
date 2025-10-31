@@ -2,7 +2,7 @@
 #include "WindowManager.h"
 #include "MultipleGamepadManager.h"
 #include "GamepadDevice.h"
-#include "ModernLogger.h"
+#include "Logger.h"
 #include "DisplayBuffer.h"
 #include <memory>
 #include <stdexcept>
@@ -58,7 +58,7 @@ bool Application::Initialize()
 bool Application::InitializeLogger()
 {
     std::string logPath = GenerateLogPath();
-    if (!ModernLogger::GetInstance().Init(logPath)) {
+    if (!Logger::GetInstance().Init(logPath)) {
         MessageBox(nullptr, L"Failed to initialize log file!", L"Error", MB_ICONERROR);
         return false;
     }
@@ -243,7 +243,7 @@ void Application::CleanupResources()
     m_windowManager.reset();
     
     // Close logger
-    ModernLogger::GetInstance().Close();
+    Logger::GetInstance().Close();
 }
 
 std::string Application::GenerateLogPath() const

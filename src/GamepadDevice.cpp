@@ -1,7 +1,7 @@
 #include "GamepadDevice.h"
 #include "JsonConfigManager.h"
 #include "InputProcessor.h"
-#include "ModernLogger.h"
+#include "Logger.h"
 #include "IDisplayBuffer.h"
 #include <algorithm>
 #include <filesystem>
@@ -346,8 +346,8 @@ void GamepadDevice::ProcessInput()
             m_displayBuffer->AddGamepadState(m_deviceName, m_currentState);
         } else {
             // Fallback to old logger for compatibility
-            ModernLogger::GetInstance().AppendFrameLog(L"[%s]", m_deviceName.c_str());
-            ModernLogger::GetInstance().AppendState(m_currentState);
+            Logger::GetInstance().AppendFrameLog(L"[%s]", m_deviceName.c_str());
+            Logger::GetInstance().AppendState(m_currentState);
         }
         
         // Process the input with device context

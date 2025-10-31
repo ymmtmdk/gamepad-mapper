@@ -1,6 +1,6 @@
 #include "MultipleGamepadManager.h"
 #include "GamepadDevice.h"
-#include "ModernLogger.h"
+#include "Logger.h"
 #include <algorithm>
 #include <sstream>
 #include <iomanip>

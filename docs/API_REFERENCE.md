@@ -12,7 +12,7 @@
 | `JsonConfigManager` | 設定管理 | `load()`, `save()`, `getButtonKeys()` |
 | `InputProcessor` | 入力変換 | `ProcessGamepadInput()`, `SendVirtualKey()` |
 | `KeyResolver` | キー解決 | `resolve()`, `resolveSequence()` |
-| `ModernLogger` | ログ出力 | `info()`, `error()`, `debug()` |
+| `Logger` | ログ出力 | `info()`, `error()`, `debug()` |
 
 ---
 

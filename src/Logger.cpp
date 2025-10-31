@@ -1,4 +1,4 @@
-#include "ModernLogger.h"
+#include "Logger.h"
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/rotating_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
@@ -11,20 +11,20 @@
 #include <locale>
 
 // Singleton instance
-ModernLogger& ModernLogger::GetInstance() {
-    static ModernLogger instance;
+Logger& Logger::GetInstance() {
+    static Logger instance;
     return instance;
 }
 
-ModernLogger::ModernLogger() : m_isInitialized(false) {
+Logger::Logger() : m_isInitialized(false) {
     // Constructor now public for dependency injection
 }
 
-ModernLogger::~ModernLogger() {
+Logger::~Logger() {
     Close();
 }
 
-bool ModernLogger::Init(const std::string& logFilePath) {
+bool Logger::Init(const std::string& logFilePath) {
     try {
         // Create rotating file sink (5MB max size, 3 backup files)
         auto rotating_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
@@ -73,13 +73,13 @@ bool ModernLogger::Init(const std::string& logFilePath) {
     }
     catch (const spdlog::spdlog_ex& ex) {
         // Fallback error handling
-        OutputDebugStringA("ModernLogger initialization failed: ");
+        OutputDebugStringA("Logger initialization failed: ");
         OutputDebugStringA(ex.what());
         return false;
     }
 }
 
-void ModernLogger::Close() {
+void Logger::Close() {
     if (m_logger && m_isInitialized) {
         m_logger->info("=== Log Ended ===");
         m_logger->flush();
@@ -89,7 +89,7 @@ void ModernLogger::Close() {
     }
 }
 
-void ModernLogger::Write(const char* fmt, ...) {
+void Logger::Write(const char* fmt, ...) {
     if (!m_logger) return;
     
     char buf[1024];
@@ -101,7 +101,7 @@ void ModernLogger::Write(const char* fmt, ...) {
     m_logger->info(buf);
 }
 
-void ModernLogger::WriteW(const wchar_t* fmt, ...) {
+void Logger::WriteW(const wchar_t* fmt, ...) {
     if (!m_logger) return;
     
     wchar_t buf[1024];
@@ -114,12 +114,12 @@ void ModernLogger::WriteW(const wchar_t* fmt, ...) {
     m_logger->info(utf8_str);
 }
 
-void ModernLogger::ClearFrameLog() {
+void Logger::ClearFrameLog() {
     std::lock_guard<std::mutex> lock(m_frameLogMutex);
     m_frameLog.clear();
 }
 
-void ModernLogger::AppendFrameLog(const wchar_t* fmt, ...) {
+void Logger::AppendFrameLog(const wchar_t* fmt, ...) {
     wchar_t buf[512];
     va_list ap;
     va_start(ap, fmt);
@@ -130,7 +130,7 @@ void ModernLogger::AppendFrameLog(const wchar_t* fmt, ...) {
     m_frameLog.emplace_back(buf);
 }
 
-void ModernLogger::AppendGamepadInfo(bool connected, const wchar_t* productName, const wchar_t* instanceName) {
+void Logger::AppendGamepadInfo(bool connected, const wchar_t* productName, const wchar_t* instanceName) {
     std::lock_guard<std::mutex> lock(m_frameLogMutex);
     
     if (connected) {
@@ -169,7 +169,7 @@ void ModernLogger::AppendGamepadInfo(bool connected, const wchar_t* productName,
     }
 }
 
-void ModernLogger::AppendState(const DIJOYSTATE2& js) {
+void Logger::AppendState(const DIJOYSTATE2& js) {
     std::lock_guard<std::mutex> lock(m_frameLogMutex);
     
     wchar_t buffer[256];
@@ -198,18 +198,18 @@ void ModernLogger::AppendState(const DIJOYSTATE2& js) {
     m_frameLog.push_back(s);
 }
 
-void ModernLogger::AppendLog(const std::wstring& message) {
+void Logger::AppendLog(const std::wstring& message) {
     std::lock_guard<std::mutex> lock(m_frameLogMutex);
     m_frameLog.push_back(message);
 }
 
-const std::vector<std::wstring>& ModernLogger::GetFrameLog() const {
+const std::vector<std::wstring>& Logger::GetFrameLog() const {
     std::lock_guard<std::mutex> lock(m_frameLogMutex);
     return m_frameLog;
 }
 
 // Wide string logging methods
-void ModernLogger::InfoW(const std::wstring& message) {
+void Logger::InfoW(const std::wstring& message) {
     if (m_logger) {
         try {
             std::string utf8_str = WStringToString(message);
@@ -221,7 +221,7 @@ void ModernLogger::InfoW(const std::wstring& message) {
     }
 }
 
-void ModernLogger::DebugW(const std::wstring& message) {
+void Logger::DebugW(const std::wstring& message) {
     if (m_logger) {
         try {
             std::string utf8_str = WStringToString(message);
@@ -233,7 +233,7 @@ void ModernLogger::DebugW(const std::wstring& message) {
     }
 }
 
-void ModernLogger::WarnW(const std::wstring& message) {
+void Logger::WarnW(const std::wstring& message) {
     if (m_logger) {
         try {
             std::string utf8_str = WStringToString(message);
@@ -245,7 +245,7 @@ void ModernLogger::WarnW(const std::wstring& message) {
     }
 }
 
-void ModernLogger::ErrorW(const std::wstring& message) {
+void Logger::ErrorW(const std::wstring& message) {
     if (m_logger) {
         try {
             std::string utf8_str = WStringToString(message);
@@ -253,20 +253,20 @@ void ModernLogger::ErrorW(const std::wstring& message) {
         }
         catch (const std::exception& e) {
             // Last resort error output
-            OutputDebugStringW(L"ModernLogger: Failed to log error message\n");
+            OutputDebugStringW(L"Logger: Failed to log error message\n");
             OutputDebugStringW(message.c_str());
         }
     }
 }
 
 // Configuration methods
-void ModernLogger::SetLogLevel(spdlog::level::level_enum level) {
+void Logger::SetLogLevel(spdlog::level::level_enum level) {
     if (m_logger) {
         m_logger->set_level(level);
     }
 }
 
-void ModernLogger::EnableConsoleOutput(bool enable) {
+void Logger::EnableConsoleOutput(bool enable) {
     // This would require recreating the logger with/without console sink
     // For now, we'll just log the configuration change
     if (m_logger) {
@@ -275,7 +275,7 @@ void ModernLogger::EnableConsoleOutput(bool enable) {
 }
 
 // Helper methods for string conversion
-std::string ModernLogger::WStringToString(const std::wstring& wstr) {
+std::string Logger::WStringToString(const std::wstring& wstr) {
     if (wstr.empty()) return {};
     
     int size_needed = WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), NULL, 0, NULL, NULL);
@@ -284,7 +284,7 @@ std::string ModernLogger::WStringToString(const std::wstring& wstr) {
     return strTo;
 }
 
-std::wstring ModernLogger::StringToWString(const std::string& str) {
+std::wstring Logger::StringToWString(const std::string& str) {
     if (str.empty()) return {};
     
     int size_needed = MultiByteToWideChar(CP_UTF8, 0, &str[0], (int)str.size(), NULL, 0);

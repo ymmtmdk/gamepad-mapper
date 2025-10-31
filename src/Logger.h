@@ -8,14 +8,14 @@
 #include <vector>
 #include <mutex>
 
-class ModernLogger : public ILogger {
+class Logger : public ILogger {
 public:
     // Constructor/Destructor for dependency injection
-    ModernLogger();
-    ~ModernLogger() override;
+    Logger();
+    ~Logger() override;
 
     // Singleton access (backward compatibility - will be deprecated)
-    static ModernLogger& GetInstance();
+    static Logger& GetInstance();
 
     // ILogger interface implementation
     bool Init(const std::string& logFilePath) override;
@@ -74,8 +74,8 @@ public:
 
 private:
     // Copy operations disabled for singleton compatibility
-    ModernLogger(const ModernLogger&) = delete;
-    ModernLogger& operator=(const ModernLogger&) = delete;
+    Logger(const Logger&) = delete;
+    Logger& operator=(const Logger&) = delete;
 
     // Helper methods
     std::string WStringToString(const std::wstring& wstr);
@@ -89,28 +89,28 @@ private:
 };
 
 // New modern macros for improved logging
-#define LOG_INFO(...) ModernLogger::GetInstance().Info(__VA_ARGS__)
-#define LOG_DEBUG(...) ModernLogger::GetInstance().Debug(__VA_ARGS__)
-#define LOG_WARN(...) ModernLogger::GetInstance().Warn(__VA_ARGS__)
-#define LOG_ERROR(...) ModernLogger::GetInstance().Error(__VA_ARGS__)
+#define LOG_INFO(...) Logger::GetInstance().Info(__VA_ARGS__)
+#define LOG_DEBUG(...) Logger::GetInstance().Debug(__VA_ARGS__)
+#define LOG_WARN(...) Logger::GetInstance().Warn(__VA_ARGS__)
+#define LOG_ERROR(...) Logger::GetInstance().Error(__VA_ARGS__)
 
 // Wide string macros for Windows
-#define LOG_INFO_W(msg) ModernLogger::GetInstance().InfoW(msg)
-#define LOG_DEBUG_W(msg) ModernLogger::GetInstance().DebugW(msg)
-#define LOG_WARN_W(msg) ModernLogger::GetInstance().WarnW(msg)
-#define LOG_ERROR_W(msg) ModernLogger::GetInstance().ErrorW(msg)
+#define LOG_INFO_W(msg) Logger::GetInstance().InfoW(msg)
+#define LOG_DEBUG_W(msg) Logger::GetInstance().DebugW(msg)
+#define LOG_WARN_W(msg) Logger::GetInstance().WarnW(msg)
+#define LOG_ERROR_W(msg) Logger::GetInstance().ErrorW(msg)
 
 // Frame logging convenience macros
-#define FRAME_LOG_CLEAR() ModernLogger::GetInstance().ClearFrameLog()
-#define FRAME_LOG_APPEND(...) ModernLogger::GetInstance().AppendFrameLog(__VA_ARGS__)
-#define FRAME_LOG_GAMEPAD_INFO(connected, product, instance) ModernLogger::GetInstance().AppendGamepadInfo(connected, product, instance)
-#define FRAME_LOG_STATE(js) ModernLogger::GetInstance().AppendState(js)
+#define FRAME_LOG_CLEAR() Logger::GetInstance().ClearFrameLog()
+#define FRAME_LOG_APPEND(...) Logger::GetInstance().AppendFrameLog(__VA_ARGS__)
+#define FRAME_LOG_GAMEPAD_INFO(connected, product, instance) Logger::GetInstance().AppendGamepadInfo(connected, product, instance)
+#define FRAME_LOG_STATE(js) Logger::GetInstance().AppendState(js)
 
 // Backward compatibility macros (DEPRECATED - for old Logger.h compatibility)
-#define MODERN_LOG_WRITE(...) ModernLogger::GetInstance().Write(__VA_ARGS__)
-#define MODERN_LOG_WRITE_W(...) ModernLogger::GetInstance().WriteW(__VA_ARGS__)
-#define MODERN_FRAME_LOG_APPEND(...) ModernLogger::GetInstance().AppendFrameLog(__VA_ARGS__)
+#define MODERN_LOG_WRITE(...) Logger::GetInstance().Write(__VA_ARGS__)
+#define MODERN_LOG_WRITE_W(...) Logger::GetInstance().WriteW(__VA_ARGS__)
+#define MODERN_FRAME_LOG_APPEND(...) Logger::GetInstance().AppendFrameLog(__VA_ARGS__)
 
 // Log level configuration macros
-#define LOG_SET_LEVEL(level) ModernLogger::GetInstance().SetLogLevel(level)
-#define LOG_ENABLE_CONSOLE(enable) ModernLogger::GetInstance().EnableConsoleOutput(enable)
+#define LOG_SET_LEVEL(level) Logger::GetInstance().SetLogLevel(level)
+#define LOG_ENABLE_CONSOLE(enable) Logger::GetInstance().EnableConsoleOutput(enable)

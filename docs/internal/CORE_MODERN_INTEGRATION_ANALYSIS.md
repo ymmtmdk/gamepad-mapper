@@ -162,7 +162,7 @@ for (auto& device : connected_devices) {
 - [ ] **Week 2**: RAII++、基本的最適化
   - リソース管理の自動化
   - パフォーマンスマクロ（GM_LIKELY等）の導入
-  - ログ統合（ModernLoggerとのさらなる連携）
+  - ログ統合（Loggerとのさらなる連携）
 
 ### Phase 2: Ranges/Algorithms導入（2-3週間）
 - [ ] **Week 3**: デバイス処理最適化

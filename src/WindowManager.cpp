@@ -1,5 +1,5 @@
 #include "WindowManager.h"
-#include "ModernLogger.h"
+#include "Logger.h"
 #include "DisplayBuffer.h"
 #include "resource.h"
 
@@ -85,7 +85,7 @@ LRESULT WindowManager::MemberWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
             m_displayBuffer->GetLines() : 
             (m_logger ? 
                 m_logger->GetFrameLog() : 
-                ModernLogger::GetInstance().GetFrameLog());
+                Logger::GetInstance().GetFrameLog());
         TEXTMETRIC tm;
         GetTextMetrics(hdc, &tm);
         int y = 4;

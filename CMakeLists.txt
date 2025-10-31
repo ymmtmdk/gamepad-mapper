@@ -25,8 +25,7 @@ add_executable (GamepadMapper WIN32
   src/MultipleGamepadManager.cpp
   src/KeyResolver.cpp
   src/JsonConfigManager.cpp
-  # src/Logger.cpp  # DEPRECATED: Migrated to ModernLogger
-  src/ModernLogger.cpp
+  src/Logger.cpp
   src/DisplayBuffer.cpp
   src/WindowManager.cpp
   src/InputProcessor.cpp
