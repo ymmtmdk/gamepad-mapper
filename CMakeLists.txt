@@ -38,6 +38,9 @@ add_executable (GamepadMapper WIN32
 )
 
 target_link_options(GamepadMapper PRIVATE -municode)
+if(MINGW)
+  target_link_options(GamepadMapper PRIVATE -static)
+endif()
 
 target_link_libraries(GamepadMapper PRIVATE 
   dinput8 dxguid user32 gdi32

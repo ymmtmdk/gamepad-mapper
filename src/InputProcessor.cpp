@@ -1,6 +1,7 @@
 ﻿#include "InputProcessor.h"
 #include "JsonConfigManager.h"
 #include "Logger.h"
+#include "IDisplayBuffer.h"
 #include <cstring>
 #include <algorithm>
 
@@ -12,6 +13,7 @@
 InputProcessor::InputProcessor() 
     : m_prevPOV(0xFFFFFFFF)
     , m_configManager(nullptr)
+    , m_displayBuffer(nullptr)
 {
     InitializeState();
 }
@@ -19,6 +21,15 @@ InputProcessor::InputProcessor()
 InputProcessor::InputProcessor(const JsonConfigManager& config)
     : m_prevPOV(0xFFFFFFFF)
     , m_configManager(&config)
+    , m_displayBuffer(nullptr)
+{
+    InitializeState();
+}
+
+InputProcessor::InputProcessor(const JsonConfigManager& config, IDisplayBuffer* displayBuffer)
+    : m_prevPOV(0xFFFFFFFF)
+    , m_configManager(&config)
+    , m_displayBuffer(displayBuffer)
 {
     InitializeState();
 }
@@ -55,7 +66,13 @@ void InputProcessor::SendVirtualKeySequence(const std::vector<WORD>& vks, bool d
         if (i) seq += L"+";
         seq += buf;
     }
-    Logger::GetInstance().AppendFrameLog(L"SendInputSeq: %s %s", seq.c_str(), down ? L"DOWN" : L"UP");
+    // Display input sequence information
+    if (m_displayBuffer) {
+        m_displayBuffer->AddFormattedLine(L"SendInputSeq: %s %s", seq.c_str(), down ? L"DOWN" : L"UP");
+    } else {
+        // DEPRECATED: Fallback to logger for compatibility
+        Logger::GetInstance().AppendFrameLog(L"SendInputSeq: %s %s", seq.c_str(), down ? L"DOWN" : L"UP");
+    }
 }
 
 void InputProcessor::SendVirtualKey(WORD vk, bool down)
@@ -152,10 +169,19 @@ void InputProcessor::ProcessButtonInternal(size_t buttonIndex, bool pressed)
     LOG_DEBUG_W(L"Button" + std::to_wstring(buttonIndex) + L" -> Keys[" + vkSeq + L"] " + 
                (pressed ? L"PRESSED" : L"RELEASED") + L" (Config: " + configPath + L")");
     
-    Logger::GetInstance().AppendFrameLog(L"Button%zu -> Keys[%s] %s", 
-                    buttonIndex, 
-                    vkSeq.c_str(), 
-                    pressed ? L"PRESSED" : L"RELEASED");
+    // Display button event information
+    if (m_displayBuffer) {
+        m_displayBuffer->AddFormattedLine(L"Button%zu -> Keys[%s] %s", 
+                        buttonIndex, 
+                        vkSeq.c_str(), 
+                        pressed ? L"PRESSED" : L"RELEASED");
+    } else {
+        // DEPRECATED: Fallback to logger for compatibility
+        Logger::GetInstance().AppendFrameLog(L"Button%zu -> Keys[%s] %s", 
+                        buttonIndex, 
+                        vkSeq.c_str(), 
+                        pressed ? L"PRESSED" : L"RELEASED");
+    }
     
     SendVirtualKeySequence(vks, pressed);
 }
@@ -229,7 +255,13 @@ void InputProcessor::ProcessPOVDirection(size_t direction, bool active)
         LOG_DEBUG_W(L"POV " + std::wstring(dirName) + L" -> Keys[" + vkSeq + L"] " + 
                    (active ? L"ON" : L"OFF") + L" (Config: " + configPath + L")");
         
-        Logger::GetInstance().AppendFrameLog(L"POV %s -> Keys[%s] %s", dirName, vkSeq.c_str(), active ? L"ON" : L"OFF");
+        // Display POV event information
+        if (m_displayBuffer) {
+            m_displayBuffer->AddFormattedLine(L"POV %s -> Keys[%s] %s", dirName, vkSeq.c_str(), active ? L"ON" : L"OFF");
+        } else {
+            // DEPRECATED: Fallback to logger for compatibility
+            Logger::GetInstance().AppendFrameLog(L"POV %s -> Keys[%s] %s", dirName, vkSeq.c_str(), active ? L"ON" : L"OFF");
+        }
         
         SendVirtualKeySequence(vks, active);
     }
@@ -298,7 +330,13 @@ void InputProcessor::ProcessAxisDirection(size_t direction, bool active)
         LOG_DEBUG_W(L"Axis " + std::wstring(dirName) + L" -> Keys[" + vkSeq + L"] " + 
                    (active ? L"ON" : L"OFF") + L" (Config: " + configPath + L")");
         
-        Logger::GetInstance().AppendFrameLog(L"Axis %s -> Keys[%s] %s", dirName, vkSeq.c_str(), active ? L"ON" : L"OFF");
+        // Display axis event information
+        if (m_displayBuffer) {
+            m_displayBuffer->AddFormattedLine(L"Axis %s -> Keys[%s] %s", dirName, vkSeq.c_str(), active ? L"ON" : L"OFF");
+        } else {
+            // DEPRECATED: Fallback to logger for compatibility
+            Logger::GetInstance().AppendFrameLog(L"Axis %s -> Keys[%s] %s", dirName, vkSeq.c_str(), active ? L"ON" : L"OFF");
+        }
         
         SendVirtualKeySequence(vks, active);
     }

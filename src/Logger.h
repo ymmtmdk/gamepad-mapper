@@ -24,13 +24,21 @@ public:
     void Write(const char* fmt, ...) override;
     void WriteW(const wchar_t* fmt, ...) override;
 
+    // DEPRECATED: Frame log methods - Use DisplayBuffer for screen display instead
+    // These methods mix logging concerns with display functionality
+    [[deprecated("Use DisplayBuffer for screen display functionality instead of frame log")]]
     void ClearFrameLog() override;
+    [[deprecated("Use DisplayBuffer for screen display functionality instead of frame log")]]
     void AppendFrameLog(const wchar_t* fmt, ...) override;
+    [[deprecated("Use DisplayBuffer for screen display functionality instead of frame log")]]
     void AppendGamepadInfo(bool connected, const wchar_t* productName, const wchar_t* instanceName) override;
+    [[deprecated("Use DisplayBuffer for screen display functionality instead of frame log")]]
     void AppendState(const DIJOYSTATE2& js) override;
+    [[deprecated("Use DisplayBuffer for screen display functionality instead of frame log")]]
     void AppendLog(const std::wstring& message) override;
 
-    // Accessors
+    // DEPRECATED: Accessor for frame log data
+    [[deprecated("Use DisplayBuffer for screen display functionality instead of frame log")]]
     const std::vector<std::wstring>& GetFrameLog() const override;
 
     // Modern logging methods with levels
@@ -100,11 +108,12 @@ private:
 #define LOG_WARN_W(msg) Logger::GetInstance().WarnW(msg)
 #define LOG_ERROR_W(msg) Logger::GetInstance().ErrorW(msg)
 
-// Frame logging convenience macros
-#define FRAME_LOG_CLEAR() Logger::GetInstance().ClearFrameLog()
-#define FRAME_LOG_APPEND(...) Logger::GetInstance().AppendFrameLog(__VA_ARGS__)
-#define FRAME_LOG_GAMEPAD_INFO(connected, product, instance) Logger::GetInstance().AppendGamepadInfo(connected, product, instance)
-#define FRAME_LOG_STATE(js) Logger::GetInstance().AppendState(js)
+// DEPRECATED: Frame logging convenience macros
+// These macros are deprecated - use DisplayBuffer for screen display functionality
+#define FRAME_LOG_CLEAR() [[deprecated("Use DisplayBuffer->Clear() instead")]] Logger::GetInstance().ClearFrameLog()
+#define FRAME_LOG_APPEND(...) [[deprecated("Use DisplayBuffer->AddFormattedLine() instead")]] Logger::GetInstance().AppendFrameLog(__VA_ARGS__)
+#define FRAME_LOG_GAMEPAD_INFO(connected, product, instance) [[deprecated("Use DisplayBuffer for display functionality")]] Logger::GetInstance().AppendGamepadInfo(connected, product, instance)
+#define FRAME_LOG_STATE(js) [[deprecated("Use DisplayBuffer for display functionality")]] Logger::GetInstance().AppendState(js)
 
 // Backward compatibility macros (DEPRECATED - for old Logger.h compatibility)
 #define MODERN_LOG_WRITE(...) Logger::GetInstance().Write(__VA_ARGS__)

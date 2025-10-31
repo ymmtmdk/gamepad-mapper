@@ -80,12 +80,13 @@ LRESULT WindowManager::MemberWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
         HBRUSH hbr = (HBRUSH)(COLOR_WINDOW + 1);
         FillRect(hdc, &rc, hbr);
 
-        // Use injected display buffer if available, fallback to logger
+        // REFACTORED: Get display lines from DisplayBuffer (unified approach)
+        // Prioritize DisplayBuffer over deprecated frame log methods
         const auto& logLines = m_displayBuffer ? 
             m_displayBuffer->GetLines() : 
             (m_logger ? 
-                m_logger->GetFrameLog() : 
-                Logger::GetInstance().GetFrameLog());
+                m_logger->GetFrameLog() :  // DEPRECATED: Remove when all components use DisplayBuffer
+                Logger::GetInstance().GetFrameLog());  // DEPRECATED: Remove when all components use DisplayBuffer
         TEXTMETRIC tm;
         GetTextMetrics(hdc, &tm);
         int y = 4;
