@@ -39,7 +39,7 @@
 ### 正しく実装されている部分
 
 #### DisplayBuffer システム（推奨アーキテクチャ）
-- **場所**: `src/DisplayBuffer.h`, `src/DisplayBuffer.cpp`, `src/IDisplayBuffer.h`
+- **場所**: `src/DisplayBuffer.h`, `src/DisplayBuffer.cpp`, `src/DisplayBuffer.h`
 - **利点**: 
   - 画面表示専用として明確に設計
   - 適切な依存性注入パターン
@@ -80,7 +80,7 @@ const std::vector<std::wstring>& GetFrameLog() const;
 #### 2.1 Logger から DisplayBuffer への機能移行
 1. **Logger::m_frameLog の削除**: 表示機能はDisplayBufferに委譲
 2. **依存性注入の強化**: LoggerにDisplayBufferへの参照を注入
-3. **インターフェースの統一**: IDisplayBufferを一貫して使用
+3. **インターフェースの統一**: DisplayBufferを一貫して使用
 
 #### 2.2 使用箇所の更新
 ```cpp
@@ -187,7 +187,7 @@ const auto& logLines = m_displayBuffer->GetLines();
 
 #### フェーズ2: 段階的移行
 2. **InputProcessor の完全リファクタリング**:
-   - IDisplayBuffer* の依存性注入を追加
+   - DisplayBuffer* の依存性注入を追加
    - 3つのコンストラクタバリエーションを実装
    - 全フレームログ呼び出しをDisplayBuffer優先に変更（フォールバック付き）
 

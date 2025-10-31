@@ -1,5 +1,6 @@
 #pragma once
-#include "IDisplayBuffer.h"
+#include <windows.h>
+#include <dinput.h>
 #include <mutex>
 #include <chrono>
 
@@ -9,40 +10,35 @@
  * スレッドセーフなスクリーン表示バッファ。メモリ制限機能付きで、
  * 古い行を自動的に削除して無制限な蓄積を防ぐ。
  */
-class DisplayBuffer : public IDisplayBuffer {
+class DisplayBuffer {
 public:
     // コンストラクタ/デストラクタ
     DisplayBuffer(size_t maxLines = 100);
-    ~DisplayBuffer() override = default;
 
-    // IDisplayBuffer interface implementation
-    void Clear() override;
-    void SetMaxLines(size_t maxLines) override;
-    size_t GetMaxLines() const override;
+    // DisplayBuffer interface implementation
+    void Clear();
+    void SetMaxLines(size_t maxLines);
+    size_t GetMaxLines() const;
 
-    void AddLine(const std::wstring& line) override;
-    void AddFormattedLine(const wchar_t* fmt, ...) override;
+    void AddLine(const std::wstring& line);
+    void AddFormattedLine(const wchar_t* fmt, ...);
 
-    void AddGamepadHeader(const std::wstring& deviceName) override;
+    void AddGamepadHeader(const std::wstring& deviceName);
     void AddGamepadInfo(bool connected, 
                        const std::wstring& productName, 
-                       const std::wstring& instanceName) override;
+                       const std::wstring& instanceName);
     void AddGamepadState(const std::wstring& deviceName, 
-                        const DIJOYSTATE2& state) override;
+                        const DIJOYSTATE2& state);
 
-    void AddStatusLine(const std::wstring& status) override;
-    void AddSeparator() override;
+    void AddStatusLine(const std::wstring& status);
+    void AddSeparator();
 
-    const std::vector<std::wstring>& GetLines() const override;
-    size_t GetLineCount() const override;
-    bool IsEmpty() const override;
+    const std::vector<std::wstring>& GetLines() const;
+    size_t GetLineCount() const;
+    bool IsEmpty() const;
 
-    size_t GetTotalLinesAdded() const override;
-    void ResetStatistics() override;
-
-    // 追加機能
-    void SetTimestampEnabled(bool enabled);
-    bool IsTimestampEnabled() const;
+    size_t GetTotalLinesAdded() const;
+    void ResetStatistics();
 
     void SetAutoSeparator(bool enabled);
     bool IsAutoSeparatorEnabled() const;

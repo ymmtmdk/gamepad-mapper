@@ -153,16 +153,6 @@ void DisplayBuffer::ResetStatistics() {
     m_totalLinesAdded = 0;
 }
 
-void DisplayBuffer::SetTimestampEnabled(bool enabled) {
-    std::lock_guard<std::mutex> lock(m_mutex);
-    m_timestampEnabled = enabled;
-}
-
-bool DisplayBuffer::IsTimestampEnabled() const {
-    std::lock_guard<std::mutex> lock(m_mutex);
-    return m_timestampEnabled;
-}
-
 void DisplayBuffer::SetAutoSeparator(bool enabled) {
     std::lock_guard<std::mutex> lock(m_mutex);
     m_autoSeparatorEnabled = enabled;

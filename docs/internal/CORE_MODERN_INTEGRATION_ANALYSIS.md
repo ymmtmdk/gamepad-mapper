@@ -8,7 +8,7 @@
 ### Modern実装の技術レベル
 - **ModernGamepadDevice**: 355行 → 180行（49%削減）、CRTP、モナディック操作
 - **ModernInputProcessor**: 306行 → 150行（51%削減）、関数型パイプライン、zip ranges
-- **ModernMultipleGamepadManager**: 284行 → 120行（58%削減）、C++23 ranges、RAII++
+- **ModernGamepadManager**: 284行 → 120行（58%削減）、C++23 ranges、RAII++
 
 ### Core基盤の高度機能
 - **std::expected**: モナディック エラーハンドリング
@@ -88,7 +88,7 @@ for (auto& device : connected_devices) {
 #### 目標: レガシークラスからModernクラスへの移行
 
 #### 統合優先順位
-1. **MultipleGamepadManager** → ModernMultipleGamepadManager
+1. **GamepadManager** → ModernGamepadManager
    - 最大の効果（58%削減）
    - 他クラスへの影響最小
    
@@ -104,11 +104,11 @@ for (auto& device : connected_devices) {
 ```cpp
 // 段階的移行: エイリアスで共存
 #ifdef USE_MODERN_IMPLEMENTATION
-    using GamepadManager = ModernMultipleGamepadManager;
+    using GamepadManager = ModernGamepadManager;
     using Device = ModernGamepadDevice;
     using Processor = ModernInputProcessor;
 #else
-    using GamepadManager = MultipleGamepadManager;
+    using GamepadManager = GamepadManager;
     using Device = GamepadDevice;
     using Processor = InputProcessor;
 #endif
@@ -156,7 +156,7 @@ for (auto& device : connected_devices) {
 ### Phase 1: Core基盤導入（1-2週間）
 - [ ] **Week 1**: Core.h統合、Expected導入
   - Application.cpp のInitialize/Shutdownを Result<> に変更
-  - MultipleGamepadManager の初期化をモナディック操作に変更
+  - GamepadManager の初期化をモナディック操作に変更
   - エラーハンドリングの統一化
 
 - [ ] **Week 2**: RAII++、基本的最適化
@@ -166,7 +166,7 @@ for (auto& device : connected_devices) {
 
 ### Phase 2: Ranges/Algorithms導入（2-3週間）
 - [ ] **Week 3**: デバイス処理最適化
-  - MultipleGamepadManager のループをrangesに変更
+  - GamepadManager のループをrangesに変更
   - デバイス検索・フィルタリングの関数型化
   
 - [ ] **Week 4-5**: 入力処理最適化
@@ -175,7 +175,7 @@ for (auto& device : connected_devices) {
   - 文字列処理の ranges/join活用
 
 ### Phase 3: Modern統合（3-4週間）
-- [ ] **Week 6**: ModernMultipleGamepadManager統合
+- [ ] **Week 6**: ModernGamepadManager統合
   - エイリアス作成、feature flag導入
   - 既存APIの互換性確保
   - 移行テスト、パフォーマンス検証

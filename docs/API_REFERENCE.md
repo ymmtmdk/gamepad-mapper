@@ -7,7 +7,7 @@
 | クラス | 用途 | 主要メソッド |
 |--------|------|------------|
 | `Application` | アプリ制御 | `Initialize()`, `Run()`, `Shutdown()` |
-| `MultipleGamepadManager` | デバイス管理 | `ScanForDevices()`, `ProcessAllDevices()` |
+| `GamepadManager` | デバイス管理 | `ScanForDevices()`, `ProcessAllDevices()` |
 | `GamepadDevice` | 個別デバイス | `Initialize()`, `ProcessInput()` |
 | `JsonConfigManager` | 設定管理 | `load()`, `save()`, `getButtonKeys()` |
 | `InputProcessor` | 入力変換 | `ProcessGamepadInput()`, `SendVirtualKey()` |

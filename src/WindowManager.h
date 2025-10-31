@@ -1,14 +1,14 @@
 #pragma once
 #include <windows.h>
 #include <string>
-#include "ILogger.h"
-#include "IDisplayBuffer.h"
+#include "Logger.h"
+#include "DisplayBuffer.h"
 
 class WindowManager {
 public:
     WindowManager(HINSTANCE hInstance, const std::wstring& title);
-    WindowManager(HINSTANCE hInstance, const std::wstring& title, ILogger* logger);
-    WindowManager(HINSTANCE hInstance, const std::wstring& title, IDisplayBuffer* displayBuffer);
+    WindowManager(HINSTANCE hInstance, const std::wstring& title, Logger* logger);
+    WindowManager(HINSTANCE hInstance, const std::wstring& title, DisplayBuffer* displayBuffer);
     ~WindowManager();
 
     bool Init(int width, int height);
@@ -17,8 +17,8 @@ public:
     void SetRunning(bool running) { m_running = running; }
     
     // Dependency injection
-    void SetLogger(ILogger* logger) { m_logger = logger; }
-    void SetDisplayBuffer(IDisplayBuffer* displayBuffer) { m_displayBuffer = displayBuffer; }
+    void SetLogger(Logger* logger) { m_logger = logger; }
+    void SetDisplayBuffer(DisplayBuffer* displayBuffer) { m_displayBuffer = displayBuffer; }
 
 private:
     static LRESULT CALLBACK StaticWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -28,6 +28,6 @@ private:
     HWND m_hWnd = nullptr;
     std::wstring m_title;
     bool m_running = true;
-    ILogger* m_logger = nullptr; // Injected dependency (legacy)
-    IDisplayBuffer* m_displayBuffer = nullptr; // Injected dependency (new)
+    Logger* m_logger = nullptr; // Injected dependency (legacy)
+    DisplayBuffer* m_displayBuffer = nullptr; // Injected dependency (new)
 };

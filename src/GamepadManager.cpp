@@ -1,30 +1,30 @@
-#include "MultipleGamepadManager.h"
+#include "GamepadManager.h"
 #include "GamepadDevice.h"
 #include "Logger.h"
 #include <algorithm>
 #include <sstream>
 #include <iomanip>
 
-MultipleGamepadManager::MultipleGamepadManager()
+GamepadManager::GamepadManager()
     : m_initialized(false)
     , m_hWnd(nullptr)
     , m_lastScanTime(0)
 {
 }
 
-MultipleGamepadManager::~MultipleGamepadManager()
+GamepadManager::~GamepadManager()
 {
     Shutdown();
 }
 
-bool MultipleGamepadManager::Initialize(HINSTANCE hInst, HWND hWnd)
+bool GamepadManager::Initialize(HINSTANCE hInst, HWND hWnd)
 {
     if (m_initialized) {
-        LOG_INFO("MultipleGamepadManager already initialized.");
+        LOG_INFO("GamepadManager already initialized.");
         return true;
     }
     
-    LOG_INFO("Initializing MultipleGamepadManager...");
+    LOG_INFO("Initializing GamepadManager...");
     m_hWnd = hWnd;
     
     if (!CreateDirectInput(hInst)) {
@@ -35,18 +35,18 @@ bool MultipleGamepadManager::Initialize(HINSTANCE hInst, HWND hWnd)
     ScanForDevices();
     
     m_initialized = true;
-    LOG_INFO("MultipleGamepadManager initialization completed. Found {} devices.", m_devices.size());
+    LOG_INFO("GamepadManager initialization completed. Found {} devices.", m_devices.size());
     
     return true;
 }
 
-void MultipleGamepadManager::Shutdown()
+void GamepadManager::Shutdown()
 {
     if (!m_initialized) {
         return;
     }
     
-    LOG_INFO("Shutting down MultipleGamepadManager...");
+    LOG_INFO("Shutting down GamepadManager...");
     
     // Shutdown all devices
     for (auto& device : m_devices) {
@@ -63,10 +63,10 @@ void MultipleGamepadManager::Shutdown()
     m_directInput.Reset();
     
     m_initialized = false;
-    LOG_INFO("MultipleGamepadManager shutdown complete.");
+    LOG_INFO("GamepadManager shutdown complete.");
 }
 
-bool MultipleGamepadManager::CreateDirectInput(HINSTANCE hInst)
+bool GamepadManager::CreateDirectInput(HINSTANCE hInst)
 {
     HRESULT hr = DirectInput8Create(hInst, DIRECTINPUT_VERSION, IID_IDirectInput8,
                                    reinterpret_cast<void**>(m_directInput.GetAddressOf()), nullptr);
@@ -80,7 +80,7 @@ bool MultipleGamepadManager::CreateDirectInput(HINSTANCE hInst)
     return true;
 }
 
-void MultipleGamepadManager::ScanForDevices()
+void GamepadManager::ScanForDevices()
 {
     if (!m_directInput) {
         return;
@@ -123,10 +123,10 @@ void MultipleGamepadManager::ScanForDevices()
     CleanupDisconnectedDevices();
     
     LOG_INFO("Device scan completed. Managing {} devices.", m_devices.size());
-    m_lastScanTime = GetTickCount();
+    m_lastScanTime = GetTickCount64();
 }
 
-void MultipleGamepadManager::CleanupDisconnectedDevices()
+void GamepadManager::CleanupDisconnectedDevices()
 {
     // Remove devices that are no longer connected
     auto it = std::remove_if(m_devices.begin(), m_devices.end(),
@@ -141,7 +141,7 @@ void MultipleGamepadManager::CleanupDisconnectedDevices()
     }
 }
 
-bool MultipleGamepadManager::IsDeviceAlreadyManaged(const GUID& guid) const
+bool GamepadManager::IsDeviceAlreadyManaged(const GUID& guid) const
 {
     return std::any_of(m_devices.begin(), m_devices.end(),
         [&guid](const std::unique_ptr<GamepadDevice>& device) {
@@ -149,14 +149,14 @@ bool MultipleGamepadManager::IsDeviceAlreadyManaged(const GUID& guid) const
         });
 }
 
-void MultipleGamepadManager::ProcessAllDevices()
+void GamepadManager::ProcessAllDevices()
 {
     if (!m_initialized) {
         return;
     }
     
     // Periodically scan for new devices
-    DWORD currentTime = GetTickCount();
+    DWORD currentTime = GetTickCount64();
     if (currentTime - m_lastScanTime > SCAN_INTERVAL_MS) {
         ScanForDevices();
     }
@@ -178,7 +178,7 @@ void MultipleGamepadManager::ProcessAllDevices()
     TryToReconnectDevices();
 }
 
-bool MultipleGamepadManager::TryToReconnectDevices()
+bool GamepadManager::TryToReconnectDevices()
 {
     bool anyReconnected = false;
     
@@ -193,7 +193,7 @@ bool MultipleGamepadManager::TryToReconnectDevices()
     return anyReconnected;
 }
 
-size_t MultipleGamepadManager::GetConnectedDeviceCount() const
+size_t GamepadManager::GetConnectedDeviceCount() const
 {
     return std::count_if(m_devices.begin(), m_devices.end(),
         [](const std::unique_ptr<GamepadDevice>& device) {
@@ -201,7 +201,7 @@ size_t MultipleGamepadManager::GetConnectedDeviceCount() const
         });
 }
 
-GamepadDevice* MultipleGamepadManager::FindDeviceByName(const std::wstring& name) const
+GamepadDevice* GamepadManager::FindDeviceByName(const std::wstring& name) const
 {
     auto it = std::find_if(m_devices.begin(), m_devices.end(),
         [&name](const std::unique_ptr<GamepadDevice>& device) {
@@ -211,7 +211,7 @@ GamepadDevice* MultipleGamepadManager::FindDeviceByName(const std::wstring& name
     return (it != m_devices.end()) ? it->get() : nullptr;
 }
 
-GamepadDevice* MultipleGamepadManager::FindDeviceByGUID(const GUID& guid) const
+GamepadDevice* GamepadManager::FindDeviceByGUID(const GUID& guid) const
 {
     auto it = std::find_if(m_devices.begin(), m_devices.end(),
         [&guid](const std::unique_ptr<GamepadDevice>& device) {
@@ -221,7 +221,7 @@ GamepadDevice* MultipleGamepadManager::FindDeviceByGUID(const GUID& guid) const
     return (it != m_devices.end()) ? it->get() : nullptr;
 }
 
-std::vector<std::wstring> MultipleGamepadManager::GetConnectedDeviceNames() const
+std::vector<std::wstring> GamepadManager::GetConnectedDeviceNames() const
 {
     std::vector<std::wstring> names;
     
@@ -234,7 +234,7 @@ std::vector<std::wstring> MultipleGamepadManager::GetConnectedDeviceNames() cons
     return names;
 }
 
-std::vector<std::wstring> MultipleGamepadManager::GetAllDeviceNames() const
+std::vector<std::wstring> GamepadManager::GetAllDeviceNames() const
 {
     std::vector<std::wstring> names;
     
@@ -247,7 +247,7 @@ std::vector<std::wstring> MultipleGamepadManager::GetAllDeviceNames() const
     return names;
 }
 
-bool MultipleGamepadManager::HasAnyConnectedDevices() const
+bool GamepadManager::HasAnyConnectedDevices() const
 {
     return std::any_of(m_devices.begin(), m_devices.end(),
         [](const std::unique_ptr<GamepadDevice>& device) {
@@ -256,9 +256,9 @@ bool MultipleGamepadManager::HasAnyConnectedDevices() const
 }
 
 // Static callback for device enumeration
-BOOL CALLBACK MultipleGamepadManager::EnumDevicesCallback(const DIDEVICEINSTANCE* pdidInstance, VOID* pContext)
+BOOL CALLBACK GamepadManager::EnumDevicesCallback(const DIDEVICEINSTANCE* pdidInstance, VOID* pContext)
 {
-    MultipleGamepadManager* manager = reinterpret_cast<MultipleGamepadManager*>(pContext);
+    GamepadManager* manager = reinterpret_cast<GamepadManager*>(pContext);
     
     // Check if this device is already managed
     if (manager->IsDeviceAlreadyManaged(pdidInstance->guidInstance)) {

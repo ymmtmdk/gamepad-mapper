@@ -26,7 +26,7 @@ find_package(spdlog CONFIG REQUIRED)
 add_executable (GamepadMapper WIN32  
   src/Application.cpp
   src/GamepadDevice.cpp
-  src/MultipleGamepadManager.cpp
+  src/GamepadManager.cpp
   src/KeyResolver.cpp
   src/JsonConfigManager.cpp
   src/Logger.cpp

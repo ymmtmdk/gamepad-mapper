@@ -69,12 +69,12 @@ auto Application::Initialize() -> VoidResult {
 }
 ```
 
-#### Day 3-4: MultipleGamepadManager現代化
+#### Day 3-4: GamepadManager現代化
 ```cpp
-// MultipleGamepadManager.h/cpp の更新
+// GamepadManager.h/cpp の更新
 #include "core/Core.h"
 
-class MultipleGamepadManager {
+class GamepadManager {
 public:
     auto Initialize(HINSTANCE hInst, HWND hWnd) -> VoidResult;
     auto CreateDirectInput(HINSTANCE hInst) -> VoidResult;
@@ -86,7 +86,7 @@ private:
 };
 
 // HRESULT → Result<> 変換の活用
-auto MultipleGamepadManager::CreateDirectInput(HINSTANCE hInst) -> VoidResult {
+auto GamepadManager::CreateDirectInput(HINSTANCE hInst) -> VoidResult {
     ComPtr<IDirectInput8> directInput;
     HRESULT hr = DirectInput8Create(hInst, DIRECTINPUT_VERSION, 
                                   IID_IDirectInput8, &directInput, nullptr);
@@ -174,10 +174,10 @@ auto GamepadDevice::PollAndGetState() -> bool {
 
 ### Week 3: デバイス処理の関数型化
 
-#### Day 11-13: MultipleGamepadManager ranges化
+#### Day 11-13: GamepadManager ranges化
 ```cpp
 // 従来のループ → ranges pipeline
-void MultipleGamepadManager::ProcessAllDevices() {
+void GamepadManager::ProcessAllDevices() {
     // Before: 手動ループ
     for (size_t i = 0; i < m_devices.size(); ++i) {
         auto& device = m_devices[i];
@@ -200,7 +200,7 @@ void MultipleGamepadManager::ProcessAllDevices() {
 }
 
 // デバイス削除もerase_ifで
-auto MultipleGamepadManager::CleanupDisconnectedDevices() -> VoidResult {
+auto GamepadManager::CleanupDisconnectedDevices() -> VoidResult {
     auto removed_count = std::erase_if(m_devices, 
         [](const auto& device) { 
             return !device || !device->IsConnected(); 
@@ -307,17 +307,17 @@ class KeyResolver {
 
 ## 📋 Phase 3: Modern実装統合（Week 6-9）
 
-### Week 6: ModernMultipleGamepadManager統合
+### Week 6: ModernGamepadManager統合
 
 #### Day 22-24: エイリアス・Feature Flag導入
 ```cpp
 // Application.h でのエイリアス作成
 #ifdef USE_MODERN_GAMEPAD_MANAGER
-    #include "modern/ModernMultipleGamepadManager.h"
-    using GamepadManagerImpl = gm::modern::ModernMultipleGamepadManager;
+    #include "modern/ModernGamepadManager.h"
+    using GamepadManagerImpl = gm::modern::ModernGamepadManager;
 #else
-    #include "MultipleGamepadManager.h"
-    using GamepadManagerImpl = MultipleGamepadManager;
+    #include "GamepadManager.h"
+    using GamepadManagerImpl = GamepadManager;
 #endif
 
 class Application {
@@ -334,9 +334,9 @@ endif()
 
 #### Day 25-26: API互換性確保
 ```cpp
-// ModernMultipleGamepadManager のレガシーAPI対応
+// ModernGamepadManager のレガシーAPI対応
 namespace gm::modern {
-    class ModernMultipleGamepadManager {
+    class ModernGamepadManager {
     public:
         // Modern API
         auto Initialize(HINSTANCE hInst, HWND hWnd) -> VoidResult;
@@ -448,10 +448,10 @@ class Application {
         
         #ifdef USE_MODERN_IMPLEMENTATION
             LOG_INFO("Using Modern C++23 implementation");
-            auto manager = std::make_unique<gm::modern::ModernMultipleGamepadManager>();
+            auto manager = std::make_unique<gm::modern::ModernGamepadManager>();
         #else
             LOG_INFO("Using legacy implementation");
-            auto manager = std::make_unique<MultipleGamepadManager>();
+            auto manager = std::make_unique<GamepadManager>();
         #endif
         
         return manager->Initialize(m_hInstance, m_windowManager->GetHwnd())
@@ -474,8 +474,8 @@ class PerformanceBenchmark {
     auto BenchmarkDeviceProcessing() {
         constexpr int iterations = 10000;
         
-        auto legacy_time = MeasureProcessingTime<MultipleGamepadManager>(iterations);
-        auto modern_time = MeasureProcessingTime<gm::modern::ModernMultipleGamepadManager>(iterations);
+        auto legacy_time = MeasureProcessingTime<GamepadManager>(iterations);
+        auto modern_time = MeasureProcessingTime<gm::modern::ModernGamepadManager>(iterations);
         
         auto improvement = (legacy_time - modern_time) / legacy_time * 100.0;
         

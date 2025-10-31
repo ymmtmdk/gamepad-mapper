@@ -6,10 +6,10 @@
 WindowManager::WindowManager(HINSTANCE hInstance, const std::wstring& title)
     : m_hInst(hInstance), m_title(title), m_logger(nullptr) {}
 
-WindowManager::WindowManager(HINSTANCE hInstance, const std::wstring& title, ILogger* logger)
+WindowManager::WindowManager(HINSTANCE hInstance, const std::wstring& title, Logger* logger)
     : m_hInst(hInstance), m_title(title), m_logger(logger) {}
 
-WindowManager::WindowManager(HINSTANCE hInstance, const std::wstring& title, IDisplayBuffer* displayBuffer)
+WindowManager::WindowManager(HINSTANCE hInstance, const std::wstring& title, DisplayBuffer* displayBuffer)
     : m_hInst(hInstance), m_title(title), m_displayBuffer(displayBuffer) {}
 
 WindowManager::~WindowManager() {

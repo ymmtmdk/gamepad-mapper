@@ -1,6 +1,6 @@
 #include "Application.h"
 #include "WindowManager.h"
-#include "MultipleGamepadManager.h"
+#include "GamepadManager.h"
 #include "GamepadDevice.h"
 #include "Logger.h"
 #include "DisplayBuffer.h"
@@ -65,7 +65,6 @@ bool Application::InitializeLogger()
 
     // Initialize display buffer for screen output
     m_displayBuffer = std::make_unique<DisplayBuffer>(150); // Allow more lines for better debugging
-    m_displayBuffer->SetTimestampEnabled(false); // Keep display clean
     m_displayBuffer->SetAutoSeparator(true);
     return true;
 }
@@ -82,7 +81,7 @@ bool Application::InitializeWindow()
 
 bool Application::InitializeGamepadManager()
 {
-    m_gamepadManager = std::make_unique<MultipleGamepadManager>();
+    m_gamepadManager = std::make_unique<GamepadManager>();
     
     // Inject display buffer dependency
     m_gamepadManager->SetDisplayBuffer(m_displayBuffer.get());

@@ -2,7 +2,7 @@
 #include "JsonConfigManager.h"
 #include "InputProcessor.h"
 #include "Logger.h"
-#include "IDisplayBuffer.h"
+#include "DisplayBuffer.h"
 #include <algorithm>
 #include <filesystem>
 

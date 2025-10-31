@@ -1,7 +1,7 @@
 ﻿#include "InputProcessor.h"
 #include "JsonConfigManager.h"
 #include "Logger.h"
-#include "IDisplayBuffer.h"
+#include "DisplayBuffer.h"
 #include <cstring>
 #include <algorithm>
 
@@ -26,7 +26,7 @@ InputProcessor::InputProcessor(const JsonConfigManager& config)
     InitializeState();
 }
 
-InputProcessor::InputProcessor(const JsonConfigManager& config, IDisplayBuffer* displayBuffer)
+InputProcessor::InputProcessor(const JsonConfigManager& config, DisplayBuffer* displayBuffer)
     : m_prevPOV(0xFFFFFFFF)
     , m_configManager(&config)
     , m_displayBuffer(displayBuffer)

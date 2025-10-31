@@ -8,14 +8,14 @@
 
 // Forward declarations
 class JsonConfigManager;
-class IDisplayBuffer;
+class DisplayBuffer;
 
 class InputProcessor {
 public:
     // Constructor/Destructor (RAII)
     InputProcessor();
     explicit InputProcessor(const JsonConfigManager& config);
-    InputProcessor(const JsonConfigManager& config, IDisplayBuffer* displayBuffer);
+    InputProcessor(const JsonConfigManager& config, DisplayBuffer* displayBuffer);
     ~InputProcessor() = default;
     
     // Non-copyable, but movable
@@ -29,7 +29,7 @@ public:
     const JsonConfigManager* GetConfig() const { return m_configManager; }
     
     // Display management
-    void SetDisplayBuffer(IDisplayBuffer* displayBuffer) { m_displayBuffer = displayBuffer; }
+    void SetDisplayBuffer(DisplayBuffer* displayBuffer) { m_displayBuffer = displayBuffer; }
     
     // State management
     void InitializeState();
@@ -61,7 +61,7 @@ private:
     const JsonConfigManager* m_configManager;
     
     // Display buffer for screen output (not logging)
-    IDisplayBuffer* m_displayBuffer;
+    DisplayBuffer* m_displayBuffer;
     
     // Helper methods
     void ProcessButtonInternal(size_t buttonIndex, bool pressed);

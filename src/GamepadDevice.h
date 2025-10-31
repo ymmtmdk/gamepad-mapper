@@ -8,7 +8,7 @@
 // Forward declarations
 class JsonConfigManager;
 class InputProcessor;
-class IDisplayBuffer;
+class DisplayBuffer;
 
 // ComPtr alias for convenience
 template<typename T>
@@ -56,7 +56,7 @@ public:
     void ProcessInput();
     
     // Display buffer injection
-    void SetDisplayBuffer(IDisplayBuffer* displayBuffer) { m_displayBuffer = displayBuffer; }
+    void SetDisplayBuffer(DisplayBuffer* displayBuffer) { m_displayBuffer = displayBuffer; }
     
     // Configuration management
     bool LoadConfiguration();
@@ -85,7 +85,7 @@ private:
     DIJOYSTATE2 m_currentState;
     
     // Dependencies
-    IDisplayBuffer* m_displayBuffer = nullptr;
+    DisplayBuffer* m_displayBuffer = nullptr;
     
     // Configuration
     std::string m_configFilePath;

@@ -9,7 +9,7 @@
 
 // Forward declarations
 class GamepadDevice;
-class IDisplayBuffer;
+class DisplayBuffer;
 
 // ComPtr alias for convenience
 template<typename T>
@@ -22,15 +22,15 @@ using ComPtr = Microsoft::WRL::ComPtr<T>;
  * handling device enumeration, connection/disconnection, and
  * coordinated input processing.
  */
-class MultipleGamepadManager {
+class GamepadManager {
 public:
     // Constructor/Destructor (RAII)
-    MultipleGamepadManager();
-    ~MultipleGamepadManager();
+    GamepadManager();
+    ~GamepadManager();
     
     // Non-copyable
-    MultipleGamepadManager(const MultipleGamepadManager&) = delete;
-    MultipleGamepadManager& operator=(const MultipleGamepadManager&) = delete;
+    GamepadManager(const GamepadManager&) = delete;
+    GamepadManager& operator=(const GamepadManager&) = delete;
     
     // Initialization
     bool Initialize(HINSTANCE hInst, HWND hWnd);
@@ -52,7 +52,7 @@ public:
     std::vector<std::wstring> GetAllDeviceNames() const;
     
     // Dependency injection
-    void SetDisplayBuffer(IDisplayBuffer* displayBuffer) { m_displayBuffer = displayBuffer; }
+    void SetDisplayBuffer(DisplayBuffer* displayBuffer) { m_displayBuffer = displayBuffer; }
     
     // State queries
     bool IsInitialized() const { return m_initialized; }
@@ -76,7 +76,7 @@ private:
     HWND m_hWnd;
     
     // Dependencies
-    IDisplayBuffer* m_displayBuffer = nullptr;
+    DisplayBuffer* m_displayBuffer = nullptr;
     
     // Device tracking
     std::unordered_map<std::string, size_t> m_deviceIndexByGUID; // GUID string -> device index

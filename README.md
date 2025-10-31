@@ -19,7 +19,7 @@
 GamepadMapper/
 ├── WinMain.cpp                     # メインエントリーポイント
 ├── Application.{h,cpp}             # 複数ゲームパッド対応アプリケーション
-├── MultipleGamepadManager.{h,cpp}  # 複数デバイス統合管理
+├── GamepadManager.{h,cpp}  # 複数デバイス統合管理
 ├── GamepadDevice.{h,cpp}          # 個別デバイス管理
 ├── JsonConfigManager.{h,cpp}      # JSON設定ファイル管理
 ├── KeyResolver.{h,cpp}            # 文字列ベースのキー解決

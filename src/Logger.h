@@ -1,5 +1,4 @@
 #pragma once
-#include "ILogger.h"
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/rotating_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
@@ -8,21 +7,21 @@
 #include <vector>
 #include <mutex>
 
-class Logger : public ILogger {
+class Logger {
 public:
     // Constructor/Destructor for dependency injection
     Logger();
-    ~Logger() override;
+    ~Logger();
 
     // Singleton access (backward compatibility - will be deprecated)
     static Logger& GetInstance();
 
     // ILogger interface implementation
-    bool Init(const std::string& logFilePath) override;
-    void Close() override;
+    bool Init(const std::string& logFilePath);
+    void Close();
 
-    void Write(const char* fmt, ...) override;
-    void WriteW(const wchar_t* fmt, ...) override;
+    void Write(const char* fmt, ...);
+    void WriteW(const wchar_t* fmt, ...);
 
 
     // Modern logging methods with levels
