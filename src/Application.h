@@ -47,6 +47,7 @@ private:
     // Main loop methods
     void ProcessMessages();
     void UpdateFrame();
+    void BuildFrameContent();
     void ProcessGamepadInput();
     void UpdateDisplay();
     void CheckExitConditions();

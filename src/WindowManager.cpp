@@ -77,21 +77,37 @@ LRESULT WindowManager::MemberWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 
         RECT rc;
         GetClientRect(hWnd, &rc);
+        
+        // Create compatible DC for double buffering
+        HDC memDC = CreateCompatibleDC(hdc);
+        HBITMAP memBitmap = CreateCompatibleBitmap(hdc, rc.right - rc.left, rc.bottom - rc.top);
+        HBITMAP oldBitmap = (HBITMAP)SelectObject(memDC, memBitmap);
+
+        // Clear background in memory DC
         HBRUSH hbr = (HBRUSH)(COLOR_WINDOW + 1);
-        FillRect(hdc, &rc, hbr);
+        FillRect(memDC, &rc, hbr);
 
         // Get display lines from DisplayBuffer
         const auto& logLines = m_displayBuffer ? 
             m_displayBuffer->GetLines() : 
             std::vector<std::wstring>();
+        
         TEXTMETRIC tm;
-        GetTextMetrics(hdc, &tm);
+        GetTextMetrics(memDC, &tm);
         int y = 4;
         for (const auto& line : logLines) {
-            TextOutW(hdc, 4, y, line.c_str(), (int)line.size());
+            TextOutW(memDC, 4, y, line.c_str(), (int)line.size());
             y += tm.tmHeight + 2;
             if (y > rc.bottom - 10) break;
         }
+
+        // Copy memory DC to screen DC
+        BitBlt(hdc, 0, 0, rc.right - rc.left, rc.bottom - rc.top, memDC, 0, 0, SRCCOPY);
+
+        // Cleanup
+        SelectObject(memDC, oldBitmap);
+        DeleteObject(memBitmap);
+        DeleteDC(memDC);
 
         EndPaint(hWnd, &ps);
         return 0;

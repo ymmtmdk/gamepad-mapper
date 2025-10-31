@@ -138,15 +138,24 @@ void Application::ProcessMessages()
 
 void Application::UpdateFrame()
 {
-    // Clear display buffer for this frame
+    // Build new frame content
+    BuildFrameContent();
+    
+    // Only update display if content has changed
+    UpdateDisplay();
+    CheckExitConditions();
+}
+
+void Application::BuildFrameContent()
+{
+    // Clear display buffer and rebuild content
     m_displayBuffer->Clear();
     
     // Display gamepad information at the top
     LogGamepadStatus();
     
+    // Process gamepad input
     ProcessGamepadInput();
-    UpdateDisplay();
-    CheckExitConditions();
 }
 
 void Application::LogGamepadStatus()
@@ -205,9 +214,9 @@ void Application::ProcessGamepadInput()
 
 void Application::UpdateDisplay()
 {
-    // Trigger WM_PAINT to update the screen
-    InvalidateRect(m_windowManager->GetHwnd(), nullptr, TRUE);
-    UpdateWindow(m_windowManager->GetHwnd());
+    // Only invalidate the rect, don't force immediate update
+    // This reduces flickering by allowing Windows to batch updates
+    InvalidateRect(m_windowManager->GetHwnd(), nullptr, FALSE);
 }
 
 void Application::CheckExitConditions()
