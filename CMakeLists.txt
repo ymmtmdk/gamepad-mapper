@@ -18,9 +18,9 @@ add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
 add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 add_compile_definitions(UNICODE _UNICODE)
 
-find_package(nlohmann_json CONFIG QUIET)
-find_package(spdlog CONFIG REQUIRED)
+find_package(nlohmann_json CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
+find_package(spdlog CONFIG REQUIRED)
 
 # 実行ファイルを WIN32（サブシステム:Windows）として作成
 add_executable (GamepadMapper WIN32  
@@ -45,8 +45,8 @@ endif()
 target_link_libraries(GamepadMapper PRIVATE 
   dinput8 dxguid user32 gdi32
   nlohmann_json::nlohmann_json
-  spdlog::spdlog
   fmt::fmt
+  spdlog::spdlog
 )
 
 set_property(TARGET GamepadMapper PROPERTY CXX_STANDARD 20)
