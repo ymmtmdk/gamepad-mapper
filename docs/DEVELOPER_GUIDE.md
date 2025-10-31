@@ -99,11 +99,24 @@ class NewGamepadDevice : public GamepadDevice {
 
 ### ログレベル設定
 ```cpp
-// 開発時: DEBUG
+// 開発時: DEBUG（詳細ログ）
 LOG_SET_LEVEL(spdlog::level::debug);
 
-// リリース時: INFO
+// リリース時: INFO（重要な情報のみ）
 LOG_SET_LEVEL(spdlog::level::info);
+
+// トラブルシューティング時: TRACE（全ログ）
+LOG_SET_LEVEL(spdlog::level::trace);
+
+// 本番環境: WARN（警告・エラーのみ）
+LOG_SET_LEVEL(spdlog::level::warn);
+
+// ログ使用例
+LOG_TRACE("Detailed execution flow");  // 最詳細
+LOG_DEBUG("Variable values: x={}", x);  // デバッグ情報
+LOG_INFO("Normal operation status");    // 一般情報
+LOG_WARN("Deprecated function used");   // 警告
+LOG_ERROR("Failed to load config");     // エラー
 ```
 
 ---

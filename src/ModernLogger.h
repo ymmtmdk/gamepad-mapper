@@ -100,7 +100,17 @@ private:
 #define LOG_WARN_W(msg) ModernLogger::GetInstance().WarnW(msg)
 #define LOG_ERROR_W(msg) ModernLogger::GetInstance().ErrorW(msg)
 
-// Backward compatibility macros (will be deprecated)
+// Frame logging convenience macros
+#define FRAME_LOG_CLEAR() ModernLogger::GetInstance().ClearFrameLog()
+#define FRAME_LOG_APPEND(...) ModernLogger::GetInstance().AppendFrameLog(__VA_ARGS__)
+#define FRAME_LOG_GAMEPAD_INFO(connected, product, instance) ModernLogger::GetInstance().AppendGamepadInfo(connected, product, instance)
+#define FRAME_LOG_STATE(js) ModernLogger::GetInstance().AppendState(js)
+
+// Backward compatibility macros (DEPRECATED - for old Logger.h compatibility)
 #define MODERN_LOG_WRITE(...) ModernLogger::GetInstance().Write(__VA_ARGS__)
 #define MODERN_LOG_WRITE_W(...) ModernLogger::GetInstance().WriteW(__VA_ARGS__)
 #define MODERN_FRAME_LOG_APPEND(...) ModernLogger::GetInstance().AppendFrameLog(__VA_ARGS__)
+
+// Log level configuration macros
+#define LOG_SET_LEVEL(level) ModernLogger::GetInstance().SetLogLevel(level)
+#define LOG_ENABLE_CONSOLE(enable) ModernLogger::GetInstance().EnableConsoleOutput(enable)

@@ -43,7 +43,13 @@ private:
     std::vector<std::wstring> m_frameLog;
 };
 
-// Helper macro for easy access
-#define LOG_WRITE(...) Logger::GetInstance().Write(__VA_ARGS__)
-#define LOG_WRITE_W(...) Logger::GetInstance().WriteW(__VA_ARGS__)
-#define FRAME_LOG_APPEND(...) Logger::GetInstance().AppendFrameLog(__VA_ARGS__)
+// DEPRECATED: These macros redirect to ModernLogger for backward compatibility
+// Please use LOG_INFO, LOG_DEBUG, LOG_WARN, LOG_ERROR instead
+#include "ModernLogger.h"
+
+#define LOG_WRITE(...) LOG_INFO(__VA_ARGS__)
+#define LOG_WRITE_W(...) LOG_INFO_W(__VA_ARGS__)
+#define FRAME_LOG_APPEND(...) ModernLogger::GetInstance().AppendFrameLog(__VA_ARGS__)
+
+// DEPRECATED WARNING: Logger class is deprecated, use ModernLogger directly
+#pragma message("Warning: Logger.h is deprecated. Use ModernLogger.h instead.")

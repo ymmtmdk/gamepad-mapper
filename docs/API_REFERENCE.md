@@ -44,9 +44,24 @@ if (config.load()) {
 
 ### ログ出力
 ```cpp
+// 基本ログ（推奨）
 LOG_INFO("Device connected: {}", deviceName);
 LOG_ERROR("Configuration load failed");
 LOG_DEBUG("Button state: {}", buttonState);
+LOG_WARN("Config file outdated: {}", filename);
+
+// ワイド文字ログ（日本語対応）
+LOG_INFO_W(L"デバイス接続: Xbox Controller");
+LOG_ERROR_W(L"設定ファイル読み込みエラー");
+
+// フレームログ（リアルタイム表示用）
+FRAME_LOG_CLEAR();
+FRAME_LOG_APPEND(L"Button[0]: Pressed");
+FRAME_LOG_GAMEPAD_INFO(true, L"Xbox Controller", L"Controller 1");
+
+// ログレベル設定
+LOG_SET_LEVEL(spdlog::level::debug);  // trace, debug, info, warn, error
+LOG_ENABLE_CONSOLE(true);             // コンソール出力有効化
 ```
 
 ---
