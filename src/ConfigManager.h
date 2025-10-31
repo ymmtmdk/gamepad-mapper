@@ -48,16 +48,16 @@ struct SystemConfig {
 };
 
 // メイン設定クラス
-class JsonConfigManager {
+class ConfigManager {
 public:
-    explicit JsonConfigManager(std::string configPath);
-    ~JsonConfigManager() = default;
+    explicit ConfigManager(std::string configPath);
+    ~ConfigManager() = default;
     
     // 移動のみ可能
-    JsonConfigManager(const JsonConfigManager&) = delete;
-    JsonConfigManager& operator=(const JsonConfigManager&) = delete;
-    JsonConfigManager(JsonConfigManager&&) = default;
-    JsonConfigManager& operator=(JsonConfigManager&&) = default;
+    ConfigManager(const ConfigManager&) = delete;
+    ConfigManager& operator=(const ConfigManager&) = delete;
+    ConfigManager(ConfigManager&&) = default;
+    ConfigManager& operator=(ConfigManager&&) = default;
     
     // メイン API
     bool load();

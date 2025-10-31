@@ -248,10 +248,10 @@ private:
 
 ### Week 4-5: 設定・文字列処理の最適化
 
-#### Day 16-18: JsonConfigManager ranges化
+#### Day 16-18: ConfigManager ranges化
 ```cpp
 // 設定ファイル処理の関数型化
-class JsonConfigManager {
+class ConfigManager {
     auto GetButtonKeys(int buttonIndex) -> Result<std::vector<std::string>> {
         // JSON配列 → std::vector の変換をrangesで
         if (auto button_array = FindButtonArray(buttonIndex)) {

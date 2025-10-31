@@ -7,15 +7,15 @@
 #include "Constants.h"
 
 // Forward declarations
-class JsonConfigManager;
+class ConfigManager;
 class DisplayBuffer;
 
 class InputProcessor {
 public:
     // Constructor/Destructor (RAII)
     InputProcessor();
-    explicit InputProcessor(const JsonConfigManager& config);
-    InputProcessor(const JsonConfigManager& config, DisplayBuffer* displayBuffer);
+    explicit InputProcessor(const ConfigManager& config);
+    InputProcessor(const ConfigManager& config, DisplayBuffer* displayBuffer);
     ~InputProcessor() = default;
     
     // Non-copyable, but movable
@@ -25,8 +25,8 @@ public:
     InputProcessor& operator=(InputProcessor&&) = default;
     
     // Configuration management
-    void SetConfig(const JsonConfigManager& config);
-    const JsonConfigManager* GetConfig() const { return m_configManager; }
+    void SetConfig(const ConfigManager& config);
+    const ConfigManager* GetConfig() const { return m_configManager; }
     
     // Display management
     void SetDisplayBuffer(DisplayBuffer* displayBuffer) { m_displayBuffer = displayBuffer; }
@@ -58,7 +58,7 @@ private:
     std::array<bool, AXIS_DIRECTIONS> m_prevAxisDown; // 0: left, 1: right, 2: up, 3: down
     
     // Configuration reference
-    const JsonConfigManager* m_configManager;
+    const ConfigManager* m_configManager;
     
     // Display buffer for screen output (not logging)
     DisplayBuffer* m_displayBuffer;

@@ -1,5 +1,5 @@
 #include "GamepadDevice.h"
-#include "JsonConfigManager.h"
+#include "ConfigManager.h"
 #include "InputProcessor.h"
 #include "Logger.h"
 #include "DisplayBuffer.h"
@@ -185,7 +185,7 @@ bool GamepadDevice::LoadConfiguration()
     LOG_DEBUG_W(L"Config file exists: " + std::wstring(std::filesystem::exists(m_configFilePath) ? L"YES" : L"NO"));
     
     // Create configuration manager with the device-specific path
-    m_configManager = std::make_unique<JsonConfigManager>(m_configFilePath);
+    m_configManager = std::make_unique<ConfigManager>(m_configFilePath);
     
     // Try to load existing config
     bool loadResult = m_configManager->load();
@@ -232,7 +232,7 @@ bool GamepadDevice::LoadConfiguration()
 bool GamepadDevice::CreateConfigurationFile()
 {
     // Get default configuration data
-    auto [gamepadConfig, systemConfig] = JsonConfigManager::createDefaultConfig();
+    auto [gamepadConfig, systemConfig] = ConfigManager::createDefaultConfig();
 
     // Set this data in the manager
     m_configManager->setConfig(gamepadConfig, systemConfig);

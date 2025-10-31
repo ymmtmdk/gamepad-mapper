@@ -9,7 +9,7 @@
 | `Application` | アプリ制御 | `Initialize()`, `Run()`, `Shutdown()` |
 | `GamepadManager` | デバイス管理 | `ScanForDevices()`, `ProcessAllDevices()` |
 | `GamepadDevice` | 個別デバイス | `Initialize()`, `ProcessInput()` |
-| `JsonConfigManager` | 設定管理 | `load()`, `save()`, `getButtonKeys()` |
+| `ConfigManager` | 設定管理 | `load()`, `save()`, `getButtonKeys()` |
 | `InputProcessor` | 入力変換 | `ProcessGamepadInput()`, `SendVirtualKey()` |
 | `KeyResolver` | キー解決 | `resolve()`, `resolveSequence()` |
 | `Logger` | ログ出力 | `info()`, `error()`, `debug()` |
@@ -36,7 +36,7 @@ device->ProcessInput(); // メインループ内で実行
 
 ### 設定ファイル操作
 ```cpp
-JsonConfigManager config("gamepad_config_xbox.json");
+ConfigManager config("gamepad_config_xbox.json");
 if (config.load()) {
     auto keys = config.getButtonKeys(0); // ボタン0のキー取得
 }

@@ -6,7 +6,7 @@ namespace AppConstants {
     // Window settings
     constexpr int WINDOW_WIDTH = 800;
     constexpr int WINDOW_HEIGHT = 600;
-    constexpr DWORD FRAME_SLEEP_MS = 20;
+    constexpr DWORD FRAME_SLEEP_MS = 10;
     
     // Input configuration
     constexpr size_t MAX_BUTTONS = 128;

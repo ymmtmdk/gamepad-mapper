@@ -21,7 +21,7 @@ GamepadMapper/
 ├── Application.{h,cpp}             # 複数ゲームパッド対応アプリケーション
 ├── GamepadManager.{h,cpp}  # 複数デバイス統合管理
 ├── GamepadDevice.{h,cpp}          # 個別デバイス管理
-├── JsonConfigManager.{h,cpp}      # JSON設定ファイル管理
+├── ConfigManager.{h,cpp}      # JSON設定ファイル管理
 ├── KeyResolver.{h,cpp}            # 文字列ベースのキー解決
 ├── InputProcessor.{h,cpp}         # 入力処理・キーボード変換
 ├── Logger.{h,cpp}                 # ログ管理・画面表示

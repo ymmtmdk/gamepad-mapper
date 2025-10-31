@@ -1,4 +1,4 @@
-#include "JsonConfigManager.h"
+#include "ConfigManager.h"
 #include "KeyResolver.h"
 #include <fstream>
 #include <nlohmann/json.hpp>
@@ -6,11 +6,11 @@
 
 using json = nlohmann::json;
 
-JsonConfigManager::JsonConfigManager(std::string configPath) 
+ConfigManager::ConfigManager(std::string configPath) 
     : m_configPath(std::move(configPath)), m_loaded(false) {
 }
 
-bool JsonConfigManager::load() {
+bool ConfigManager::load() {
     std::ifstream configFile(m_configPath);
     if (!configFile.is_open()) {
         // ログに詳細な情報を出力
@@ -48,7 +48,7 @@ bool JsonConfigManager::load() {
     return true;
 }
 
-bool JsonConfigManager::save() const {
+bool ConfigManager::save() const {
     std::ofstream configFile(m_configPath);
     if (!configFile.is_open()) {
         return false;
@@ -62,14 +62,14 @@ bool JsonConfigManager::save() const {
     return true;
 }
 
-void JsonConfigManager::setConfig(const GamepadConfig& gamepad, const SystemConfig& system) {
+void ConfigManager::setConfig(const GamepadConfig& gamepad, const SystemConfig& system) {
     m_gamepad = gamepad;
     m_system = system;
     compileKeyMappings();
     m_loaded = true;
 }
 
-std::pair<GamepadConfig, SystemConfig> JsonConfigManager::createDefaultConfig() {
+std::pair<GamepadConfig, SystemConfig> ConfigManager::createDefaultConfig() {
     GamepadConfig gamepad;
     SystemConfig system;
 
@@ -79,11 +79,8 @@ std::pair<GamepadConfig, SystemConfig> JsonConfigManager::createDefaultConfig() 
         {1, {"x"}},
         {2, {"c"}},
         {3, {"v"}},
-        {4, {"printscreen"}},
-        {5, {"win", "x"}},
-        {6, {"ctrl", "c"}},
+        {5, {"win"}},
         {7, {"alt", "tab"}},
-        {8, {"ctrl", "alt", "delete"}}
     };
 
     // Default DPad
@@ -99,7 +96,7 @@ std::pair<GamepadConfig, SystemConfig> JsonConfigManager::createDefaultConfig() 
     return {gamepad, system};
 }
 
-void JsonConfigManager::compileKeyMappings() {
+void ConfigManager::compileKeyMappings() {
     m_buttonCache.clear();
     m_dpadCache.clear();
     m_stickCache.clear();
@@ -122,11 +119,11 @@ void JsonConfigManager::compileKeyMappings() {
     m_stickCache["right"] = compileKeySequence(m_gamepad.left_stick.right);
 }
 
-std::vector<WORD> JsonConfigManager::compileKeySequence(const std::vector<std::string>& keys) const {
+std::vector<WORD> ConfigManager::compileKeySequence(const std::vector<std::string>& keys) const {
     return KeyResolver::resolveSequence(keys);
 }
 
-std::vector<WORD> JsonConfigManager::getButtonKeys(int buttonIndex) const {
+std::vector<WORD> ConfigManager::getButtonKeys(int buttonIndex) const {
     auto it = m_buttonCache.find(buttonIndex);
     if (it != m_buttonCache.end()) {
         return it->second;
@@ -134,7 +131,7 @@ std::vector<WORD> JsonConfigManager::getButtonKeys(int buttonIndex) const {
     return {}; // Return empty vector if not found
 }
 
-std::vector<WORD> JsonConfigManager::getDpadKeys(const std::string& direction) const {
+std::vector<WORD> ConfigManager::getDpadKeys(const std::string& direction) const {
     auto it = m_dpadCache.find(direction);
     if (it != m_dpadCache.end()) {
         return it->second;
@@ -142,7 +139,7 @@ std::vector<WORD> JsonConfigManager::getDpadKeys(const std::string& direction) c
     return {};
 }
 
-std::vector<WORD> JsonConfigManager::getStickKeys(const std::string& direction) const {
+std::vector<WORD> ConfigManager::getStickKeys(const std::string& direction) const {
     auto it = m_stickCache.find(direction);
     if (it != m_stickCache.end()) {
         return it->second;

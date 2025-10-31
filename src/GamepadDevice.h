@@ -6,7 +6,7 @@
 #include <memory>
 
 // Forward declarations
-class JsonConfigManager;
+class ConfigManager;
 class InputProcessor;
 class DisplayBuffer;
 
@@ -60,7 +60,7 @@ public:
     
     // Configuration management
     bool LoadConfiguration();
-    const JsonConfigManager* GetConfig() const { return m_configManager.get(); }
+    const ConfigManager* GetConfig() const { return m_configManager.get(); }
 
 private:
     // Internal initialization helpers
@@ -70,7 +70,7 @@ private:
     
     // Device components
     ComPtr<IDirectInputDevice8> m_device;
-    std::unique_ptr<JsonConfigManager> m_configManager;
+    std::unique_ptr<ConfigManager> m_configManager;
     std::unique_ptr<InputProcessor> m_inputProcessor;
     
     // Device information
