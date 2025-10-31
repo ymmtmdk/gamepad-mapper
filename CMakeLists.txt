@@ -34,27 +34,22 @@ add_executable (GamepadMapper WIN32
   src/GamepadMapper.rc
 )
 
-# nlohmann_json を検索。vcpkg を利用している場合は vcpkg の toolchain を指定して CMake を呼んでください
 find_package(nlohmann_json CONFIG QUIET)
-
-# spdlog と fmt ライブラリを検索
 find_package(spdlog CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 
 # Unicodeを有効にする
 add_compile_definitions(UNICODE _UNICODE)
-
 target_link_options(GamepadMapper PRIVATE -municode)
 if(MINGW)
-  # 静的リンクを設定 
   target_link_options(GamepadMapper PRIVATE -static)
 endif()
 
-target_link_libraries(GamepadMapper PRIVATE dinput8 dxguid user32 gdi32)
-target_link_libraries(GamepadMapper PRIVATE nlohmann_json::nlohmann_json)
-target_link_libraries(GamepadMapper PRIVATE spdlog::spdlog fmt::fmt)
+target_link_libraries(GamepadMapper PRIVATE 
+  dinput8 dxguid user32 gdi32
+  nlohmann_json::nlohmann_json
+  spdlog::spdlog fmt::fmt
+)
 
-if (CMAKE_VERSION VERSION_GREATER 3.12)
-  set_property(TARGET GamepadMapper PROPERTY CXX_STANDARD 20)
-endif()
+set_property(TARGET GamepadMapper PROPERTY CXX_STANDARD 20)
 

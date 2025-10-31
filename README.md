@@ -116,7 +116,14 @@ gamepad_config_{device_name}.json
 - **依存ライブラリ**: `dinput8.lib`, `dxguid.lib`, `user32.lib`, `nlohmann/json`
 
 ### ビルド手順
+Visual Studioによるビルドと、Linux上からのクロスコンパイルに対応しています。
 
+Windows
+```
+CMakeプロジェクトとして開き、x64 Debug With Vcpkg構成を選択して、ビルド
+```
+
+Linux
 ```bash
 bash build.sh
 ```
@@ -128,27 +135,4 @@ bash build.sh
 
 ### 主要クラス
 
-#### GamepadDevice
-- 個別のゲームパッドデバイス管理
-- DirectInputデバイスの初期化・設定
-- デバイス固有の設定ファイル管理
-- 接続/切断の検出と再接続
-
-#### MultipleGamepadManager
-- 複数デバイスの統合管理
-- デバイスの自動検出・列挙
-- 定期的なデバイススキャン (5秒間隔)
-- GUID/名前によるデバイス検索
-
-#### Application
-- 複数ゲームパッド対応のメインアプリケーション
-- MultipleGamepadManagerの統合
-- 複数デバイス状態のログ表示
-- 統合されたウィンドウ管理
-
-### 動的デバイス管理
-
-- **ホットプラグ対応**: 実行中の接続/切断を自動検出
-- **自動再接続**: 切断されたデバイスの再接続を試行
-- **デバイス状態監視**: リアルタイムでの接続状態表示
-
+TODO
