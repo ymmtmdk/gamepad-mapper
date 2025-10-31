@@ -192,7 +192,7 @@ LOG_INFO("GUID: {}", deviceGuid);
 ### 2. 設定ファイル選択
 ```bash
 # デバイスに応じた設定ファイルをコピー
-cp gamepad_config_xbox.json gamepad_config_mydevice.json
+cp config/samples/gamepad_config_xbox.json gamepad_config_mydevice.json
 ```
 
 ### 3. カスタマイズ

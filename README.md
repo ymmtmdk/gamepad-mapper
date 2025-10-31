@@ -44,19 +44,28 @@ gamepad_config_{device_name}.json
 - `gamepad_config_PS4_Controller.json`
 - `gamepad_config_Generic_USB_Gamepad.json`
 
-## 📁 利用可能な設定ファイル
+## 📁 設定ファイル
 
-プロジェクトには、様々なデバイスと用途に応じた設定ファイルサンプルが用意されています：
+プロジェクトには、様々なデバイスと用途に応じた設定ファイルサンプルが `config/samples/` フォルダに用意されています：
 
 ### 🎮 デバイス別設定
-- **`gamepad_config_xbox.json`** - Xbox One/Series Controller（標準設定）
-- **`gamepad_config_ps4.json`** - PlayStation 4 Controller  
-- **`gamepad_config_switch_pro.json`** - Nintendo Switch Pro Controller
+- **`config/samples/gamepad_config_xbox.json`** - Xbox One/Series Controller（標準設定）
+- **`config/samples/gamepad_config_ps4.json`** - PlayStation 4 Controller  
+- **`config/samples/gamepad_config_switch_pro.json`** - Nintendo Switch Pro Controller
 
 ### 🎯 用途別設定  
-- **`gamepad_config_gaming.json`** - ゲーム用（高速応答・低遅延）
-- **`gamepad_config_productivity.json`** - 作業効率化（Ctrl+キー組み合わせ）
-- **`gamepad_config_media.json`** - メディア再生用（動画・音楽操作）
+- **`config/samples/gamepad_config_gaming.json`** - ゲーム用（高速応答・低遅延）
+- **`config/samples/gamepad_config_productivity.json`** - 作業効率化（Ctrl+キー組み合わせ）
+- **`config/samples/gamepad_config_media.json`** - メディア再生用（動画・音楽操作）
+
+### 🚀 使用方法
+```bash
+# 1. 適切なサンプルをコピー
+cp config/samples/gamepad_config_xbox.json gamepad_config_mydevice.json
+
+# 2. デバイス情報を実際の値に更新
+# 3. 好みに応じてキー配置をカスタマイズ
+```
 
 ### 基本設定例
 ```json
@@ -90,7 +99,7 @@ gamepad_config_{device_name}.json
 }
 ```
 
-**詳細な設定方法は [設定ガイド](docs/CONFIGURATION_GUIDE.md) を参照してください。**
+**詳細な設定方法は [設定ガイド](docs/CONFIGURATION_GUIDE.md) または [config/README.md](config/README.md) を参照してください。**
 
 ## 🎯 ゲームパッド入力変換
 
