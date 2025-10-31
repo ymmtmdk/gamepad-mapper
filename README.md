@@ -145,4 +145,44 @@ wine build/GamepadMapper.exe
 
 ### 主要クラス
 
-TODO
+| クラス | 責務 | 主要メソッド | ファイル |
+|--------|------|------------|----------|
+| `Application` | アプリケーション全体の制御・ライフサイクル管理 | `Initialize()`, `Run()`, `Shutdown()` | `src/Application.{h,cpp}` |
+| `MultipleGamepadManager` | 複数ゲームパッド統合管理・デバイス検出 | `ScanForDevices()`, `ProcessAllDevices()` | `src/MultipleGamepadManager.{h,cpp}` |
+| `GamepadDevice` | 個別デバイス管理・入力処理 | `LoadConfiguration()`, `ProcessInput()` | `src/GamepadDevice.{h,cpp}` |
+| `JsonConfigManager` | JSON設定ファイル管理・設定読み込み | `load()`, `save()`, `getButtonKeys()` | `src/JsonConfigManager.{h,cpp}` |
+| `InputProcessor` | 入力変換・キーボード送信・仮想キー生成 | `ProcessGamepadInput()`, `SendVirtualKey()` | `src/InputProcessor.{h,cpp}` |
+| `KeyResolver` | キー名→仮想キーコード変換 | `resolve()`, `resolveSequence()` | `src/KeyResolver.{h,cpp}` |
+| `WindowManager` | ウィンドウ管理・GUI描画 | `Init()`, `GetHwnd()`, `ShowWindow()` | `src/WindowManager.{h,cpp}` |
+| `ModernLogger` | 高性能ログシステム（spdlogベース） | `info()`, `error()`, `debug()` | `src/ModernLogger.{h,cpp}` |
+
+#### 主要な相互作用
+
+```
+Application
+    ├── WindowManager          (GUI管理)
+    ├── MultipleGamepadManager (デバイス統合管理)
+    │   └── GamepadDevice[]    (個別デバイス)
+    │       ├── JsonConfigManager (設定管理)
+    │       ├── InputProcessor    (入力変換)
+    │       └── KeyResolver       (キー解決)
+    └── ModernLogger           (ログ出力)
+```
+
+## 📚 ドキュメント
+
+詳細な情報については、以下のドキュメントを参照してください：
+
+### 🚀 メインドキュメント（簡潔版・推奨）
+- [API リファレンス](docs/API_REFERENCE.md) - 主要クラス・使用例・設定形式
+- [開発者ガイド](docs/DEVELOPER_GUIDE.md) - クイックスタート・コーディング規約  
+- [トラブルシューティング](docs/TROUBLESHOOTING.md) - よくある問題の解決法
+
+### 📖 詳細版ドキュメント（必要時のみ）
+- [API リファレンス（詳細版）](docs/API_REFERENCE_ORIGINAL.md) - 全API詳細説明
+- [開発者ガイド（詳細版）](docs/DEVELOPER_GUIDE_ORIGINAL.md) - 理論的背景・高度な開発情報
+- [トラブルシューティング（詳細版）](docs/TROUBLESHOOTING_ORIGINAL.md) - 網羅的問題解決ガイド
+
+### 📊 プロジェクト分析資料
+- [ドキュメント実装分析](docs/DOCUMENT_IMPLEMENTATION_ANALYSIS.md) - 整合性分析結果
+- [ドキュメント簡略化レポート](docs/DOCUMENTATION_SIMPLIFICATION_REPORT.md) - 改善作業レポート
