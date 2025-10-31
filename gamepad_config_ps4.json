@@ -1,0 +1,47 @@
+{
+  "device_info": {
+    "name": "PS4 Controller",
+    "instance_name": "Wireless Controller",
+    "guid": "{054c05c4-0000-0000-0000-504944564944}"
+  },
+  "gamepad": {
+    "buttons": [
+      { "index": 0, "keys": ["z"] },
+      { "index": 1, "keys": ["x"] },
+      { "index": 2, "keys": ["c"] },
+      { "index": 3, "keys": ["v"] },
+      { "index": 4, "keys": ["q"] },
+      { "index": 5, "keys": ["e"] },
+      { "index": 6, "keys": ["shift"] },
+      { "index": 7, "keys": ["enter"] },
+      { "index": 8, "keys": ["tab"] },
+      { "index": 9, "keys": ["space"] },
+      { "index": 10, "keys": ["f1"] },
+      { "index": 11, "keys": ["f2"] }
+    ],
+    "dpad": {
+      "up": ["up"],
+      "down": ["down"],
+      "left": ["left"],
+      "right": ["right"]
+    },
+    "left_stick": {
+      "left": ["a"],
+      "right": ["d"],
+      "up": ["w"],
+      "down": ["s"]
+    },
+    "right_stick": {
+      "left": ["j"],
+      "right": ["l"],
+      "up": ["i"],
+      "down": ["k"]
+    }
+  },
+  "config": {
+    "stick_threshold": 350,
+    "log_level": "info",
+    "enable_vibration": false,
+    "deadzone_percentage": 8
+  }
+}

@@ -44,14 +44,27 @@ gamepad_config_{device_name}.json
 - `gamepad_config_PS4_Controller.json`
 - `gamepad_config_Generic_USB_Gamepad.json`
 
-### 設定ファイル例
+## 📁 利用可能な設定ファイル
 
+プロジェクトには、様々なデバイスと用途に応じた設定ファイルサンプルが用意されています：
+
+### 🎮 デバイス別設定
+- **`gamepad_config_xbox.json`** - Xbox One/Series Controller（標準設定）
+- **`gamepad_config_ps4.json`** - PlayStation 4 Controller  
+- **`gamepad_config_switch_pro.json`** - Nintendo Switch Pro Controller
+
+### 🎯 用途別設定  
+- **`gamepad_config_gaming.json`** - ゲーム用（高速応答・低遅延）
+- **`gamepad_config_productivity.json`** - 作業効率化（Ctrl+キー組み合わせ）
+- **`gamepad_config_media.json`** - メディア再生用（動画・音楽操作）
+
+### 基本設定例
 ```json
 {
   "device_info": {
     "name": "Xbox Controller",
     "instance_name": "Controller (Xbox One For Windows)",
-    "guid": "{12345678-1234-1234-1234-123456789ABC}"
+    "guid": "{045e028e-0000-0000-0000-504944564944}"
   },
   "gamepad": {
     "buttons": [
@@ -60,24 +73,24 @@ gamepad_config_{device_name}.json
       { "index": 8, "keys": ["ctrl", "alt", "delete"] }
     ],
     "dpad": {
-      "up": ["up"],
-      "down": ["down"],
-      "left": ["left"],
-      "right": ["right"]
+      "up": ["up"], "down": ["down"], 
+      "left": ["left"], "right": ["right"]
     },
     "left_stick": {
-      "left": ["a"],
-      "right": ["d"],
-      "up": ["w"],
-      "down": ["s"]
+      "left": ["a"], "right": ["d"], 
+      "up": ["w"], "down": ["s"]
     }
   },
   "config": {
     "stick_threshold": 400,
-    "log_level": "info"
+    "log_level": "info",
+    "enable_vibration": true,
+    "deadzone_percentage": 10
   }
 }
 ```
+
+**詳細な設定方法は [設定ガイド](docs/CONFIGURATION_GUIDE.md) を参照してください。**
 
 ## 🎯 ゲームパッド入力変換
 
@@ -186,3 +199,5 @@ Application
 ### 📊 プロジェクト分析資料
 - [ドキュメント実装分析](docs/DOCUMENT_IMPLEMENTATION_ANALYSIS.md) - 整合性分析結果
 - [ドキュメント簡略化レポート](docs/DOCUMENTATION_SIMPLIFICATION_REPORT.md) - 改善作業レポート
+- [設定ガイド](docs/CONFIGURATION_GUIDE.md) - 詳細な設定方法・カスタマイズガイド
+- [設定ファイル作成レポート](docs/CONFIGURATION_FILES_CREATION_REPORT.md) - 設定ファイル整備結果
