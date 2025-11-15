@@ -1,10 +1,6 @@
-﻿# CMakeList.txt : CMakeProject1 の CMake プロジェクト。ソースを含めて、次を定義します:
-# プロジェクト専用ロジックはこちらです。
-#
-cmake_minimum_required(VERSION 3.15)
-project(CMakeProject1 LANGUAGES CXX)
+﻿cmake_minimum_required(VERSION 3.15)
+project(Project LANGUAGES CXX)
 
-# C++20 を指定
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
