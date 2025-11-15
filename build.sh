@@ -16,5 +16,5 @@ else
 fi
 
 # ビルド実行
-ninja
+cmake --build .
 
