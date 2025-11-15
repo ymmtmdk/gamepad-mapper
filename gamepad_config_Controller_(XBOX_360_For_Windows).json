@@ -30,23 +30,9 @@
         ]
       },
       {
-        "index": 4,
-        "keys": [
-          "printscreen"
-        ]
-      },
-      {
         "index": 5,
         "keys": [
-          "win",
-          "x"
-        ]
-      },
-      {
-        "index": 6,
-        "keys": [
-          "ctrl",
-          "c"
+          "win"
         ]
       },
       {
@@ -54,14 +40,6 @@
         "keys": [
           "alt",
           "tab"
-        ]
-      },
-      {
-        "index": 8,
-        "keys": [
-          "ctrl",
-          "alt",
-          "delete"
         ]
       }
     ],
